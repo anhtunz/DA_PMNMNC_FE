@@ -8,6 +8,7 @@ const HomePage = () => {
   }
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
+      <div className='bg-gray-'></div>
       <h1 className='text-5xl font-bold text-blue-600 mb-6'>This is HomePage</h1>
       <Button type='primary' onClick={handleButtonClick} danger>
         Go to test Page
