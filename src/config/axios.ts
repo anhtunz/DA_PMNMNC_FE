@@ -5,21 +5,17 @@ const request = axios.create({
   withCredentials: true
 })
 const handleAxiosError = (error: unknown) => {
-  if (axios.isAxiosError(error)) {
-    return {
-      status: error.response?.status ?? 500,
-      errors: error.response?.data ?? 'Unknown error'
-    }
-  }
   return {
-    status: 500,
-    errors: 'Unexpected error'
+    data: null,
+    status: axios.isAxiosError(error) ? error.response?.status : 500,
+    errors: axios.isAxiosError(error) ? error.response?.data : String(error)
   }
 }
 
 export const createAbortController = () => new AbortController()
 export const get = async (path: string, option?: AxiosRequestConfig, controller?: AbortController) => {
   try {
+    await request.get('/sanctum/csrf-cookie')
     const response = await request.get(path, {
       ...option,
       signal: controller?.signal
@@ -36,8 +32,8 @@ export const post = async (path: string, data: object, option?: AxiosRequestConf
       signal: controller?.signal
     })
     return {
-      status: response.status,
-      data: response.data
+      data: response.data,
+      status: response.status
     }
   } catch (error) {
     return handleAxiosError(error)
