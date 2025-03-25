@@ -1,20 +1,28 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import routesConfig from './routes'
 import NotFound from './pages/NotFound'
-
+import { useSelector } from 'react-redux'
+import { RootState } from './stores'
 function App() {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
   const routes = createBrowserRouter([
     ...routesConfig.map((route) => ({
       path: route.path,
-      element: route.layout ? <route.layout /> : undefined,
-      children: [{ index: true, element: <route.element /> }]
+      element:
+        route.requiresAuth && !isAuthenticated ? (
+          <Navigate to='/login' replace />
+        ) : route.layout ? (
+          <route.layout />
+        ) : (
+          <route.element />
+        ),
+      children: route.layout ? [{ index: true, element: <route.element /> }] : undefined
     })),
     {
-      path: '*', // ✅ Thêm route 404 vào trong mảng
+      path: '*',
       element: <NotFound />
     }
   ])
-
   return <RouterProvider router={routes} />
 }
 
