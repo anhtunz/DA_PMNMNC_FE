@@ -23,8 +23,8 @@ const Headers = ({
   } = theme.useToken()
   return (
     <Header
-      className='sticky z-99999 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 z-50 flex items-center justify-between px-4'
-      style={{ padding: 0, background: colorBgContainer }}
+      className='sticky z-99999 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 flex items-center justify-between px-4'
+      style={{ paddingLeft: 0, paddingRight: 15, background: colorBgContainer }}
     >
       {!isMd ? (
         <Button
