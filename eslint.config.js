@@ -22,7 +22,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      'max-len': ['warn', { code: 120, ignoreUrls: true }],
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'none',
       'prettier/prettier': [
         'warn',
         {
