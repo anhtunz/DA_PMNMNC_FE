@@ -79,7 +79,7 @@ const WorkshiftStaffPage = () => {
         <span className='font-bold'>Ngày hôm nay: {`${day}`}</span>
         <Popover
           content={
-            <div className='flex justify-center items-end flex-col p-3 '>
+            <div className='flex justify-center items-end flex-col p-3 gap-3'>
               <div className='flex flex-col justify-start items-start md:items-start gap-3'>
                 <div className='flex flex-row gap-3'>
                   <SelectOption optionData={optionStaff} />
