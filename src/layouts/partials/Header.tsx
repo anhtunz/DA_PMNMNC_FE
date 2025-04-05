@@ -23,7 +23,7 @@ const Headers = ({
   } = theme.useToken()
   return (
     <Header
-      className='sticky z-99999 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 flex items-center justify-between px-4'
+      className='sticky z-1 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 flex items-center justify-between px-4'
       style={{ paddingLeft: 0, paddingRight: 15, background: colorBgContainer }}
     >
       {!isMd ? (
@@ -51,9 +51,8 @@ const Headers = ({
       )}
 
       <h1
-        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${
-          !expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
-        }`}
+        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${!expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
+          }`}
       >
         Good Morning, Tunzz!
       </h1>
