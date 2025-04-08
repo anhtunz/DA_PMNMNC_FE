@@ -1,29 +1,33 @@
 import { DatePicker, Space } from 'antd'
-import { useState } from 'react'
 import dayjs from 'dayjs'
-interface InitialCalender {
-  firstDay: string | null
-  lastDay: string | null
-}
-
 interface RangeCalendarProps {
-  nowDay: string
+  startDate?: string
+  endDate?: string
   isDisableFirstDay?: boolean
   isDisableLastDay?: boolean
+  onChange?: (range: { firstDay: string | null; lastDay: string | null }) => void
 }
 
-const RangeCalendarComponent = ({ nowDay, isDisableFirstDay, isDisableLastDay }: RangeCalendarProps) => {
-  const [time, setTime] = useState<InitialCalender>({ firstDay: null, lastDay: null })
-  const onChangeRangerTime = (rangeDate: InitialCalender) => {
-    setTime(rangeDate)
-  }
-  console.log(time)
+const RangeCalendarComponent = ({
+  startDate,
+  endDate,
+  isDisableFirstDay,
+  isDisableLastDay,
+  onChange
+}: RangeCalendarProps) => {
   return (
     <Space direction='vertical'>
       <DatePicker.RangePicker
-        defaultValue={[dayjs(`${nowDay}`, 'YYYY-MM-DD'), dayjs(`${nowDay}`, 'YYYY-MM-DD')]}
+        {...(startDate && endDate
+          ? {
+            value: [
+              dayjs(startDate, 'YYYY-MM-DD'),
+              dayjs(endDate, 'YYYY-MM-DD'),
+            ],
+          }
+          : {})}
         disabled={[isDisableFirstDay ?? false, isDisableLastDay ?? false]}
-        onChange={(_date, toDateString) => onChangeRangerTime({ firstDay: toDateString[0], lastDay: toDateString[1] })}
+        onChange={(_date, toDateString) => onChange?.({ firstDay: toDateString[0], lastDay: toDateString[1] })}
       />
     </Space>
   )
