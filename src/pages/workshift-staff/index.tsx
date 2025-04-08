@@ -8,17 +8,23 @@ import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import { formatDateByYMD, formatDateByDMY } from '../../components/helpers/formatNowDate'
 import { data, columns } from '../../assets/dataset/tableContent'
 import { optionStaff } from '../../assets/dataset/optionStaff'
+import { useSelectOption } from '../../hooks/useSelectOption'
+import { getCurrentWeek, getCurrentMonth } from '../../components/helpers/dateRange'
 const WorkshiftStaffPage = () => {
   const optionTime = [
     {
-      value: '0',
+      value: 'week',
       label: 'Tuần này'
     },
     {
-      value: '1',
+      value: 'month',
       label: 'Tháng này'
     }
   ]
+
+  const { selected: selectedSingle, handleSelect: handleSelectSingle } = useSelectOption(false)
+  const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
+
 
   const handleRemoveItem = (key: string) => {
     console.log(key)
@@ -44,6 +50,13 @@ const WorkshiftStaffPage = () => {
   const onChange = (range: { firstDay: string | null; lastDay: string | null }) => {
     setRangeDate({ startDate: range.firstDay ?? dateFormatYMD, endDate: range.lastDay ?? dateFormatYMD })
   }
+
+  let timeWeek, timeMonth
+  if (selectedSingle === 'week') {
+    timeWeek = getCurrentWeek(dateFormatYMD);
+  } else if (selectedSingle === 'month') {
+    timeMonth = getCurrentMonth(dateFormatYMD);
+  }
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
@@ -57,6 +70,7 @@ const WorkshiftStaffPage = () => {
                   isMultiSelect={true}
                   placeholder='Chọn nhân viên'
                   customWidth='100%'
+                  onChange={handleSelecteMulti}
                 />
                 <div className='flex gap-4'>
                   <SelectOption
@@ -64,6 +78,7 @@ const WorkshiftStaffPage = () => {
                     isMultiSelect={false}
                     placeholder='Chọn thời gian'
                     customWidth='50%'
+                    onChange={handleSelectSingle}
                   />
                   <RangeCalendarComponent
                     startDate={rangeDate.startDate}
