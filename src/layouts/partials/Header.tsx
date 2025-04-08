@@ -4,6 +4,7 @@ import ThemeModeButton from '../../components/common/ThemeModeButton'
 import NotificationDropdown from '../../components/common/NotificationDropdown'
 import UserDropdown from '../../components/common/UserDropdown'
 import { MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { useUserStore } from '../../stores/key_store'
 
 const Headers = ({
   expanded,
@@ -21,6 +22,8 @@ const Headers = ({
   const {
     token: { colorBgContainer }
   } = theme.useToken()
+
+  const { user, setUser, clearUser, isAuthenticatedZustand } = useUserStore()
   return (
     <Header
       className='sticky z-1 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 flex items-center justify-between px-4'
@@ -51,19 +54,20 @@ const Headers = ({
       )}
 
       <h1
-        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${!expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
-          }`}
+        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${
+          !expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
+        }`}
       >
-        Good Morning, Tunzz!
+        Good Morning, {user?.name ?? ''}!
       </h1>
       {expanded ? (
         <div className='flex items-center gap-5'>
           <ThemeModeButton />
           <NotificationDropdown />
-          <UserDropdown />
+          <UserDropdown user={user} />
         </div>
       ) : (
-        <UserDropdown />
+        <UserDropdown user={user} />
       )}
     </Header>
   )

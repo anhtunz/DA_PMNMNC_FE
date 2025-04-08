@@ -1,7 +1,7 @@
 import { Dropdown, MenuProps, Space } from 'antd'
 import { useState } from 'react'
 import { SettingOutlined } from '@ant-design/icons'
-const UserDropdown = () => {
+const UserDropdown = ({ user }: { user: any }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   function toggleDropdown() {
@@ -11,7 +11,7 @@ const UserDropdown = () => {
   const items: MenuProps['items'] = [
     {
       key: '1',
-      label: 'tunztunzz@gmail.com',
+      label: `${user?.email ?? ''}`,
       disabled: true
     },
     {
@@ -43,7 +43,7 @@ const UserDropdown = () => {
             className='flex items-center text-gray-700 dropdown-toggle dark:text-gray-400'
           >
             <span className='mr-3 overflow-hidden rounded-full h-11 w-11'>
-              <img src='https://ui-avatars.com/api/?background=0D8ABC&color=fff' alt='User' />
+              <img src={user?.avatar ?? ''} alt='User' sizes='24' />
             </span>
 
             <span className='block mr-1 font-medium text-theme-sm max-md:hidden'>TunzTunzz</span>
