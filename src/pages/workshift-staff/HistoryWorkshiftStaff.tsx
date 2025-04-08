@@ -8,7 +8,10 @@ import { useState } from 'react'
 import { FilterOutlined } from '@ant-design/icons'
 import { optionStaff } from '../../assets/dataset/optionStaff'
 import { formatDateByDMY, formatDateByYMD } from '../../components/helpers/formatNowDate'
+import { useSelectOption } from '../../hooks/useSelectOption'
 const HistoryWorkshiftStaffPage = () => {
+  const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
+
   const [open, setOpen] = useState(false)
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
@@ -60,7 +63,8 @@ const HistoryWorkshiftStaffPage = () => {
                   optionData={optionStaff}
                   isMultiSelect={true}
                   placeholder='Chọn nhân viên'
-                  customWidth='100%' />
+                  customWidth='100%'
+                  onChange={handleSelecteMulti} />
                 <div className='flex flex-col gap-2 w-full'>
                   <span className='font-bold'>Chọn thời gian</span>
                   <RangeCalendarComponent

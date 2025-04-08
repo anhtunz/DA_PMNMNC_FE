@@ -1,5 +1,4 @@
 import { Select } from 'antd'
-import { useState } from 'react'
 
 interface OptionItem {
   value: string
@@ -11,13 +10,9 @@ interface InitialProps {
   isMultiSelect: boolean
   placeholder: string
   customWidth?: string
+  onChange: (value: string | string[]) => void
 }
-const SelectOption = ({ optionData, isMultiSelect, placeholder, customWidth }: InitialProps) => {
-  const [selected, setSelected] = useState('')
-
-  const onChange = (value: string) => {
-    setSelected(value)
-  }
+const SelectOption = ({ optionData, isMultiSelect, placeholder, customWidth, onChange }: InitialProps) => {
   return (
     <Select
       showSearch
