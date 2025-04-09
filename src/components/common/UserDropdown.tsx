@@ -1,4 +1,4 @@
-import { Dropdown, MenuProps, Space } from 'antd'
+import { Dropdown, MenuProps } from 'antd'
 import { useState } from 'react'
 import { SettingOutlined } from '@ant-design/icons'
 const UserDropdown = ({ user }: { user: any }) => {

@@ -2,6 +2,7 @@ import MainLayout from '../layouts/MainLayout'
 import DashBoardPage from '../pages/Dashboard'
 import EmployeePage from '../pages/Employees/EmployeePage'
 import HomePage from '../pages/Home/HomePage'
+import ProfilePage from '../pages/Profile'
 import WorkshiftStaffPage from '../pages/workshift-staff'
 import HistoryWorkshiftStaffPage from '../pages/workshift-staff/HistoryWorkshiftStaff'
 interface RouteType {
@@ -38,6 +39,12 @@ export const privateRoutes: RouteType[] = [
   {
     path: '/history-workshift-staff',
     element: HistoryWorkshiftStaffPage,
+    requiresAuth: true,
+    layout: MainLayout
+  },
+  {
+    path: '/profile',
+    element: ProfilePage,
     requiresAuth: true,
     layout: MainLayout
   }
