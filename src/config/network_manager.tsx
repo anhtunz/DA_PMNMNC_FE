@@ -1,12 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
 import ApplicationConstants from '../constant/ApplicationConstant'
+import cookieStorage from '../components/helpers/cookieHandler'
 
 class NetworkManager {
   private static _instance: NetworkManager | null = null
   private axiosInstance: AxiosInstance
 
   private constructor() {
-    const token = localStorage.getItem(ApplicationConstants.TOKEN)
+    const accessToken = cookieStorage.getItem(ApplicationConstants.TOKEN)
     this.axiosInstance = axios.create({
       baseURL: `${ApplicationConstants.DOMAIN}`,
       timeout: 10000,
@@ -15,10 +16,10 @@ class NetworkManager {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Credentials': 'false',
         'Access-Control-Allow-Headers':
-          'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale',
+          'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-accessToken,locale',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-        Authorization: `Bearer ${token}` || ''
+        Authorization: `Bearer ${accessToken}` || ''
       }
     })
   }
