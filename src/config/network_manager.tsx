@@ -1,12 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
 import ApplicationConstants from '../constant/ApplicationConstant'
+import cookieStorage from '../components/helpers/cookieHandler'
 
 class NetworkManager {
   private static _instance: NetworkManager | null = null
   private axiosInstance: AxiosInstance
 
   private constructor() {
-    const token = localStorage.getItem(ApplicationConstants.TOKEN)
+    const token = cookieStorage.getItem(ApplicationConstants.TOKEN)
     this.axiosInstance = axios.create({
       baseURL: `${ApplicationConstants.DOMAIN}`,
       headers: {
