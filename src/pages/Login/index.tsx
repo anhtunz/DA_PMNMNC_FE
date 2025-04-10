@@ -1,105 +1,102 @@
-/* eslint-disable max-len */
-import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { Button } from 'antd'
+import { useState } from 'react'
+import { Form, FormProps, Input } from 'antd'
 import Login from '../../services/auth/login'
-import { loginSuccess } from '../../stores/slice/user/authSlice'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../stores'
+import useUserStore from '../../stores/userStore'
+import LoadingButton from '../../components/common/LoadingButton'
+import ToastMessage from '../../components/common/ToastMessage'
+import cookieStorage from '../../components/helpers/cookieHandler'
+import { useNavigate } from 'react-router-dom'
+import ApplicationConstants from '../../constant/ApplicationConstant'
+import StatusCodeConstants from '../../constant/StatusCodeConstants'
+type FieldType = {
+  email?: string
+  password?: string
+}
+
 const LoginPage = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorEmail, setErrorEmail] = useState([])
-  const [errorPassword, setErrorPassword] = useState([])
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard')
+  const [loading, setLoading] = useState(false)
+  //Form ant design
+  const onFinish: FormProps<FieldType>['onFinish'] = (value) => {
+    if (value.email && value.password) {
+      handleLogin({ email: value.email, password: value.password })
     }
-  }, [isAuthenticated, navigate])
+  }
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo)
+  }
+
+  const [errors, setErrors] = useState('')
+
   //Call and handle response api
-  const handleLogin = async (event: { preventDefault: () => void }) => {
-    event.preventDefault()
+  const { setUser } = useUserStore()
+  const handleLogin = async (value: { email: string; password: string }) => {
     try {
-      const response = await Login(email, password)
+      setLoading(true)
+      const response = await Login(value.email, value.password)
       if (!response) {
         console.error('Response is undefined')
         return
       }
-      if (response?.status === 200) {
-        alert('Đăng nhập thành công')
-        const token = response?.data?.data?.token
-        dispatch(loginSuccess({ token }))
+
+      if (response.status === StatusCodeConstants.OK) {
+        const user = response.data.data.user
+        const token = response.data.data.token
+        setLoading(true)
+        cookieStorage.setItem(ApplicationConstants.TOKEN, token)
+        setUser(user, token)
+        ToastMessage({ msg: 'Đăng nhập thành công', position: 'top-right', type: 'success' })
         navigate('/dashboard')
-      } else if ('errors' in response && response.status === 422) {
-        setErrorEmail(response.errors.errors.email || [])
-        setErrorPassword(response.errors.errors.password || [])
-      } else if ('errors' in response && response.status === 400) {
-        alert(response.errors.message)
+      } else if (response.status === StatusCodeConstants.BAD_REQUEST) {
+        setLoading(false)
+        setErrors(response.data.message)
+        ToastMessage({ msg: `${errors}`, position: 'top-right', type: 'error' })
       }
     } catch (error) {
+      setLoading(false)
       console.log(error)
     }
   }
-  //Error is hidden after 3s
-  useEffect(() => {
-    if (errorEmail.length > 0 || errorPassword.length > 0) {
-      const timeout = setTimeout(() => {
-        setErrorEmail([])
-        setErrorPassword([])
-      }, 3000)
-
-      return () => clearTimeout(timeout)
-    }
-  }, [errorEmail, errorPassword])
 
   return (
-    <form className='max-w-xl mx-auto'>
-      <div className='mb-3'>
-        <label htmlFor='Email' className='text-red-400 font-bold'>
-          * Email
-        </label>
-        <input
-          type='text'
+    <div className='max-w-[600px] mx-auto my-10'>
+      <Form
+        name='basic'
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete='off'
+      >
+        <Form.Item<FieldType>
+          label='Email'
           name='email'
-          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none'
-          placeholder=''
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errorEmail.length > 0 &&
-          errorEmail.map((error, index) => (
-            <p key={index} className='text-red-400 font-bold'>
-              {error}
-            </p>
-          ))}
-      </div>
-      <div className='mb-3'>
-        <label htmlFor='Username' className='text-red-400 font-bold'>
-          * Username
-        </label>
-        <input
-          type='password'
+          rules={[
+            { required: true, message: 'Please input your email!' },
+            { type: 'email', message: 'Please enter a valid email!' }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item<FieldType>
+          label='Password'
           name='password'
-          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none'
-          placeholder=''
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errorPassword.length > 0 &&
-          errorPassword.map((error, index) => (
-            <p key={index} className='text-red-400 font-bold'>
-              {error}
-            </p>
-          ))}
-      </div>
-      <Button type='primary' onClick={handleLogin}>
-        Login
-      </Button>
-    </form>
+          rules={[
+            { required: true, message: 'Please input your password!' },
+            { min: 6, message: 'Password must be at least 6 characters!' }
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item label={null}>
+          <LoadingButton htmlType='submit' textButton='Submit' loading={loading} />
+        </Form.Item>
+      </Form>
+    </div>
   )
 }
 export default LoginPage
