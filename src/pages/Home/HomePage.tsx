@@ -1,6 +1,5 @@
 import { Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { Counter } from '../../components/counter'
 const HomePage = () => {
   const navigate = useNavigate()
   const handleButtonClick = () => {
@@ -15,7 +14,6 @@ const HomePage = () => {
           Go to test Page
         </Button>
       </div>
-      <Counter />
     </div>
   )
 }
