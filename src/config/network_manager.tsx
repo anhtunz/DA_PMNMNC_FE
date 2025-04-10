@@ -43,7 +43,7 @@ class NetworkManager {
       })
       return response
     } catch (error: any) {
-      throw error.response
+      return error.response
     }
   }
 
@@ -63,7 +63,7 @@ class NetworkManager {
       })
       return response
     } catch (error: any) {
-      throw error.response
+      return error.response
     }
   }
 
@@ -82,7 +82,7 @@ class NetworkManager {
       })
       return response
     } catch (error: any) {
-      throw error.response
+      return error.response
     }
   }
 
@@ -116,7 +116,7 @@ class NetworkManager {
       })
       return response.status
     } catch (error: any) {
-      throw error.response
+      return error.response
     }
   }
 
@@ -134,7 +134,7 @@ class NetworkManager {
       })
       return response.status
     } catch (error: any) {
-      throw error.response
+      return error.response
     }
   }
 }
