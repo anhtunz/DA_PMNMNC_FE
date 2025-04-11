@@ -1,9 +1,10 @@
 import { Dropdown, MenuProps } from 'antd'
 import { useState } from 'react'
 import { SettingOutlined } from '@ant-design/icons'
-const UserDropdown = ({ user }: { user: any }) => {
+import useUserStore from '../../stores/userStore'
+const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
-
+  const { user } = useUserStore()
   function toggleDropdown() {
     setIsOpen(!isOpen)
   }
@@ -11,7 +12,7 @@ const UserDropdown = ({ user }: { user: any }) => {
   const items: MenuProps['items'] = [
     {
       key: '1',
-      label: `${user?.email ?? ''}`,
+      label: `${user && user.email || 'Not updated'}`,
       disabled: true
     },
     {
@@ -43,14 +44,13 @@ const UserDropdown = ({ user }: { user: any }) => {
             className='flex items-center text-gray-700 dropdown-toggle dark:text-gray-400'
           >
             <span className='mr-3 overflow-hidden rounded-full h-11 w-11'>
-              <img src={user?.avatar ?? ''} alt='User' sizes='24' />
+              <img src={user?.avatar || 'https://ui-avatars.com/api/?background=0D8ABC&color=fff'} alt='User' />
             </span>
 
-            <span className='block mr-1 font-medium text-theme-sm max-md:hidden'>TunzTunzz</span>
+            <span className='block mr-1 font-medium text-theme-sm max-md:hidden'>{user && user.name}</span>
             <svg
-              className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 max-md:hidden  ${
-                isOpen ? 'rotate-180' : ''
-              }`}
+              className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 max-md:hidden  ${isOpen ? 'rotate-180' : ''
+                }`}
               width='18'
               height='20'
               viewBox='0 0 18 20'

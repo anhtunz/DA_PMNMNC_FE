@@ -1,4 +1,4 @@
-import { AppstoreOutlined, ClockCircleOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -30,18 +30,6 @@ const items: MenuItem[] = [
         ]
       }
     ]
-  },
-  {
-    key: 'sub2',
-    label: 'Navigation Two',
-    icon: <AppstoreOutlined />,
-    children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' }
-    ]
-  },
-  {
-    type: 'divider'
   },
   {
     key: 'sub4',

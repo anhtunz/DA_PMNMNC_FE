@@ -1,15 +1,15 @@
 import axios, { AxiosInstance } from 'axios'
 import ApplicationConstants from '../constant/ApplicationConstant'
+import cookieStorage from '../components/helpers/cookieHandler'
 
 class NetworkManager {
   private static _instance: NetworkManager | null = null
   private axiosInstance: AxiosInstance
 
   private constructor() {
-    const token = localStorage.getItem(ApplicationConstants.TOKEN)
+    const token = cookieStorage.getItem(ApplicationConstants.TOKEN)
     this.axiosInstance = axios.create({
       baseURL: `${ApplicationConstants.DOMAIN}`,
-      timeout: 10000,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -39,7 +39,9 @@ class NetworkManager {
   async getDataFromServer(path: string): Promise<any> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] GET url: ${ApplicationConstants.DOMAIN}/${path}`)
-      const response = await this.axiosInstance.get(path)
+      const response = await this.axiosInstance.get(path, {
+        validateStatus: (status) => status === 200
+      })
       return response
     } catch (error: any) {
       return error.response
@@ -57,6 +59,7 @@ class NetworkManager {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] GET Params url: ${ApplicationConstants.DOMAIN}/${path}`)
       const response = await this.axiosInstance.get(path, {
+        validateStatus: (status) => status === 200,
         params
       })
       return response
@@ -75,13 +78,30 @@ class NetworkManager {
   async createDataInServer(path: string, body: Record<string, any>): Promise<any> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] POST url: ${ApplicationConstants.DOMAIN}/${path}`)
-      const response = await this.axiosInstance.post(path, body)
+      const response = await this.axiosInstance.post(path, body, {
+        validateStatus: (status) => status === 200
+      })
       return response
     } catch (error: any) {
       return error.response
     }
   }
 
+  async createFormDataInServer(path: string, body: FormData): Promise<any> {
+    try {
+      console.log(`[${new Date().toLocaleTimeString()}] POST url: ${ApplicationConstants.DOMAIN}/${path}`)
+
+      const response = await this.axiosInstance.post(path, body, {
+        validateStatus: (status) => status === 200,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      return response
+    } catch (error: any) {
+      return error.response
+    }
+  }
   /**
    * Updates existing data on the server using a PUT request.
    *
@@ -92,7 +112,9 @@ class NetworkManager {
   async updateDataInServer(path: string, body: Record<string, any>): Promise<number> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] PUT url: ${ApplicationConstants.DOMAIN}/${path}`)
-      const response = await this.axiosInstance.put(path, body)
+      const response = await this.axiosInstance.put(path, body, {
+        validateStatus: (status) => status === 200
+      })
       return response.status
     } catch (error: any) {
       return error.response
@@ -108,7 +130,9 @@ class NetworkManager {
   async deleteDataInServer(path: string): Promise<number> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] DELETE url: ${ApplicationConstants.DOMAIN}/${path}`)
-      const response = await this.axiosInstance.delete(path)
+      const response = await this.axiosInstance.delete(path, {
+        validateStatus: (status) => status === 200
+      })
       return response.status
     } catch (error: any) {
       return error.response
