@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Form, FormProps, Input } from 'antd'
 import LoadingButton from '../../components/common/LoadingButton'
 import { useNavigate } from 'react-router-dom'
-import useLoginHandler from '../../services/auth/LoginHandler'
+import useLoginHandler from '../../services/auth/loginHandler'
+
 type FieldType = {
   email?: string
   password?: string
