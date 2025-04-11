@@ -5,22 +5,21 @@ import locale from 'antd/es/date-picker/locale/vi_VN';
 import dayjs from 'dayjs';
 import 'antd/dist/reset.css';
 
-// Define a type for DatePicker's value
+// Định nghĩa một kiểu cho giá trị của DatePicker
 type DatePickerValue = dayjs.Dayjs;
 
 function ShiftRegistration() {
-  // State for the current date and selected date
+ // Trạng thái cho ngày hiện tại và ngày đã chọn
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedShifts, setSelectedShifts] = useState<{[key: string]: boolean}>({
-    // Pre-select some shifts for demonstration (as shown in the image)
     '1-11/04/2025': true,
     '1-12/04/2025': true,
     '2-11/04/2025': true,
     '4-12/04/2025': true,
   });
 
-  // Update current date every second
+ // Cập nhật ngày hiện tại mỗi giây
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDate(new Date());
@@ -34,12 +33,12 @@ function ShiftRegistration() {
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
-  // Navigate to previous week
+  // Điều hướng đến tuần trước
   const goToPreviousWeek = () => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 7);
     
-    // Don't allow navigating to dates before current date
+    // Không cho phép điều hướng đến ngày trước ngày hiện tại
     if (newDate >= startOfDay(currentDate)) {
       setSelectedDate(newDate);
     }
@@ -66,15 +65,14 @@ function ShiftRegistration() {
     return compareDate < today;
   };
 
-  // Check if a cell should be disabled based on the image
   const isCellDisabled = (date: Date): boolean => {
     const dateStr = formatDate(date);
-    
-    // Check if it's a specific weekday (Monday to Friday) with the given dates from the image
+  
+   
     const day = date.getDay();
     
     if (day >= 1 && day <= 5) { // Monday to Friday
-      // Check the specific dates from the image (07/04 to 11/04)
+      
       const weekdaysToDisable = [
         '07/04/2025',
         '08/04/2025',
@@ -93,16 +91,13 @@ function ShiftRegistration() {
     return false;
   };
 
-  // Get week days starting from Monday
   const getWeekDays = (date: Date) => {
     const days = [];
-    // Find the Monday of the current week
     const mondayDate = new Date(date);
     const day = date.getDay();
     const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
     mondayDate.setDate(diff);
 
-    // Generate dates for the week (Monday to Sunday)
     for (let i = 0; i < 7; i++) {
       const newDate = new Date(mondayDate);
       newDate.setDate(mondayDate.getDate() + i);
@@ -111,7 +106,6 @@ function ShiftRegistration() {
     return days;
   };
 
-  // Get the first day of the week (Monday)
   const getFirstDayOfWeek = (date: Date): Date => {
     const newDate = new Date(date);
     const day = date.getDay();
@@ -120,22 +114,17 @@ function ShiftRegistration() {
     return newDate;
   };
 
-  // Handle date change from date picker
   const handleDateChange = (date: DatePickerValue | null) => {
     if (date) {
-      // Convert to JavaScript Date object
       const jsDate = date.toDate();
       
-      // Don't allow selecting dates before current date
       if (jsDate >= startOfDay(currentDate)) {
         setSelectedDate(jsDate);
       }
     }
   };
 
-  // Toggle shift selection
   const toggleShift = (shiftKey: string, date: Date) => {
-    // Prevent toggle for past dates or disabled cells
     if (isPastDate(date) || isCellDisabled(date)) {
       return;
     }
@@ -146,9 +135,7 @@ function ShiftRegistration() {
     }));
   };
 
-  // Toggle all shifts for a specific day
   const toggleDayShifts = (date: Date) => {
-    // Prevent toggle for past dates or disabled cells
     if (isPastDate(date) || isCellDisabled(date)) {
       return;
     }
@@ -156,39 +143,29 @@ function ShiftRegistration() {
     const formattedDate = formatDate(date);
     const shiftsForDay = [1, 2, 3, 4, 5].map(shift => `${shift}-${formattedDate}`);
     
-    // Check if all shifts for this day are already selected
     const allSelected = shiftsForDay.every(key => selectedShifts[key]);
     
-    // Create a new state object with updated values
     const newSelectedShifts = { ...selectedShifts };
     
-    // Toggle all shifts for the day (select all if not all selected, deselect all if all selected)
     for (const key of shiftsForDay) {
       newSelectedShifts[key] = !allSelected;
     }
     
     setSelectedShifts(newSelectedShifts);
   };
-
-  // Toggle all shifts for a specific shift number across the week
   const toggleShiftRow = (shiftNumber: number) => {
     const currentWeekDays = getWeekDays(selectedDate);
     const shiftsForRow = [];
-    
-    // Only include future and non-disabled dates
     for (const date of currentWeekDays) {
       if (!isPastDate(date) && !isCellDisabled(date)) {
         shiftsForRow.push(`${shiftNumber}-${formatDate(date)}`);
       }
     }
     
-    // Check if all shifts for this row are already selected
     const allSelected = shiftsForRow.every(key => selectedShifts[key]);
-    
-    // Create a new state object with updated values
+  
     const newSelectedShifts = { ...selectedShifts };
-    
-    // Toggle all shifts for the row (select all if not all selected, deselect all if all selected)
+
     for (const key of shiftsForRow) {
       newSelectedShifts[key] = !allSelected;
     }
@@ -196,7 +173,6 @@ function ShiftRegistration() {
     setSelectedShifts(newSelectedShifts);
   };
 
-  // Calculate current week days and first day of the week
   const weekDays = getWeekDays(selectedDate);
   const firstDayOfWeek = getFirstDayOfWeek(selectedDate);
 
@@ -206,7 +182,6 @@ function ShiftRegistration() {
     return dayNames[day];
   };
 
-  // Get Ant Design date value from JavaScript date
   const getAntdDate = (date: Date): dayjs.Dayjs => {
     return dayjs(date);
   };
