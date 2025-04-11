@@ -11,6 +11,7 @@ import WorkshiftStaffPage from '../pages/workshift-staff'
 import HistoryWorkshiftStaffPage from '../pages/workshift-staff/HistoryWorkshiftStaff'
 import ProtectedRoute from './protectedRoute'
 import ApplicationConstants from '../constant/ApplicationConstant'
+import ProfilePage from '../pages/Profile/index'
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: 'history-workshift-staff',
         element: <HistoryWorkshiftStaffPage />
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage /> // Assuming you have a ProfilePage component
       }
     ]
   },

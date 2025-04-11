@@ -2,11 +2,18 @@ import { Dropdown, MenuProps } from 'antd'
 import { useState } from 'react'
 import { SettingOutlined } from '@ant-design/icons'
 import useUserStore from '../../stores/userStore'
+import { useNavigate } from 'react-router-dom'
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { user } = useUserStore()
+  const navigate = useNavigate()
   function toggleDropdown() {
     setIsOpen(!isOpen)
+  }
+  const handleMenuClick = (key: string) => {
+    if (key === '2') {
+      navigate('/profile')
+    }
   }
 
   const items: MenuProps['items'] = [
@@ -21,7 +28,8 @@ const UserDropdown = () => {
     {
       key: '2',
       label: 'Profile',
-      extra: '⌘P'
+      extra: '⌘P',
+      onClick: () => handleMenuClick('2')
     },
     {
       key: '3',
