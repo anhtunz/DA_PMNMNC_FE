@@ -1,6 +1,6 @@
 import { NetworkManager } from "../../config/network_manager"
 import APIPathConstants from "../../constant/ApiPathConstants"
-const Login = async (email: string, password: string) => {
+const loginService = async (email: string, password: string) => {
   const data = {
     email,
     password
@@ -12,4 +12,4 @@ const Login = async (email: string, password: string) => {
     console.log(error)
   }
 }
-export default Login
+export default loginService
