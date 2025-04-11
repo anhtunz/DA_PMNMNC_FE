@@ -1,13 +1,8 @@
 import { useState } from 'react'
 import { Form, FormProps, Input } from 'antd'
-import Login from '../../services/auth/login'
-import useUserStore from '../../stores/userStore'
 import LoadingButton from '../../components/common/LoadingButton'
-import ToastMessage from '../../components/common/ToastMessage'
-import cookieStorage from '../../components/helpers/cookieHandler'
 import { useNavigate } from 'react-router-dom'
-import ApplicationConstants from '../../constant/ApplicationConstant'
-import StatusCodeConstants from '../../constant/StatusCodeConstants'
+import useLoginHandler from '../../services/auth/LoginHandler'
 type FieldType = {
   email?: string
   password?: string
@@ -16,49 +11,23 @@ type FieldType = {
 const LoginPage = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const { login } = useLoginHandler()
+
   //Form ant design
   const onFinish: FormProps<FieldType>['onFinish'] = (value) => {
     if (value.email && value.password) {
-      handleLogin({ email: value.email, password: value.password })
+      login({
+        email: value.email,
+        password: value.password,
+        setLoading,
+        onSuccess: () => navigate('/dashboard')
+      })
     }
   }
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
-
-  const [errors, setErrors] = useState('')
-
-  //Call and handle response api
-  const { setUser } = useUserStore()
-  const handleLogin = async (value: { email: string; password: string }) => {
-    try {
-      setLoading(true)
-      const response = await Login(value.email, value.password)
-      if (!response) {
-        console.error('Response is undefined')
-        return
-      }
-
-      if (response.status === StatusCodeConstants.OK) {
-        const user = response.data.data.user
-        const token = response.data.data.token
-        setLoading(true)
-        cookieStorage.setItem(ApplicationConstants.TOKEN, token)
-        setUser(user, token)
-        ToastMessage({ msg: 'Đăng nhập thành công', position: 'top-right', type: 'success' })
-        navigate('/dashboard')
-      } else if (response.status === StatusCodeConstants.BAD_REQUEST) {
-        setLoading(false)
-        setErrors(response.data.message)
-        ToastMessage({ msg: `${errors}`, position: 'top-right', type: 'error' })
-      }
-    } catch (error) {
-      setLoading(false)
-      console.log(error)
-    }
-  }
-
   return (
     <div className='max-w-[600px] mx-auto my-10'>
       <Form
