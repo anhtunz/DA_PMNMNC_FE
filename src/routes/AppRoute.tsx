@@ -13,6 +13,7 @@ import ProtectedRoute from './protectedRoute'
 import ApplicationConstants from '../constant/ApplicationConstant'
 import ProfilePage from '../pages/Profile/index'
 import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
+import UsersManager from '../pages/admin/user_manager/UserManager'
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: 'shift-registration',
         element: <ShiftRegistration /> // Assuming you have a ShiftRegistration component
+      },
+      {
+        path: ApplicationConstants.USERS_MANAGER_PATH,
+        element: <UsersManager />
       }
     ]
   },
