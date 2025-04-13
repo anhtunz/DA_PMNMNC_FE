@@ -1,10 +1,9 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Form, Input, TimePicker, FormProps, Button } from 'antd';
 import dayjs, { Dayjs } from "dayjs";
 import { NetworkManager } from "../../config/network_manager";
 import StatusCodeConstants from "../../constant/StatusCodeConstants";
 import ToastMessage from "../../components/common/ToastMessage";
-import LoadingButton from "../../components/common/LoadingButton";
 import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
@@ -19,12 +18,14 @@ type FieldType = {
 const AddShiftPage: React.FC = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
+
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
        
         if (values.time_start?.isAfter(values.time_end)) {
-            ToastMessage({ msg: `${"Start time must be smaller than end time!"}`, position: 'top-right', type: 'error' })
+            ToastMessage({ msg: `{"Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc"}`, position: 'top-right', type: 'error' })
             return;
         }
+
         const start = values.time_start?.format('HH:mm:ss') ?? '';
         const end = values.time_end?.format('HH:mm:ss') ?? '';
 
@@ -36,7 +37,6 @@ const AddShiftPage: React.FC = () => {
                 time_end: end
             })
             // console.log(values);
-
         }
         
     };
@@ -60,12 +60,17 @@ const AddShiftPage: React.FC = () => {
                 console.error('Response is undefined')
                 return
             }
-            console.log(response);
 
+            console.log(response);
+            // console.log(values);
+            
             if (response.status === StatusCodeConstants.OK) {
-                navigate('/dashboard')
+                // ToastMessage({ msg: `Thêm thành công`, position: 'top-right', type: 'success' })
+                navigate('/list-of-shifts')
             } else if (response.status === StatusCodeConstants.BAD_REQUEST) {
-                ToastMessage({ msg: `Error calling API`, position: 'top-right', type: 'error' })
+                ToastMessage({ msg: `HTTP 400 Bad Request`, position: 'top-right', type: 'error' })
+            } else if (response.status === StatusCodeConstants.UNAUTHORIZED) {
+                ToastMessage({ msg: `HTTP 401 Unauthorized`, position: 'top-right', type: 'error' })
             }
             setLoading(false);
         } catch (e) {
@@ -78,7 +83,6 @@ const AddShiftPage: React.FC = () => {
             <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Thêm ca làm</h2>
 
             <Form
-
                 layout="vertical"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
@@ -128,7 +132,7 @@ const AddShiftPage: React.FC = () => {
                         className="w-full md:w-1/2"
                         rules={[{ required: true, message: "Vui lòng chọn thời gian bắt đầu!" }]}
                     >
-                        <TimePicker format="HH:mm:ss" className="w-full rounded-lg"/>
+                        <TimePicker format="HH:mm:ss" className="w-full rounded-lg" />
                     </Form.Item>
 
                     <Form.Item
@@ -141,12 +145,11 @@ const AddShiftPage: React.FC = () => {
                     </Form.Item>
                 </div>
                 
-                
                 <Form.Item>
                     <Button
-                            htmlType="submit"
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                            loading={loading}                    
+                            htmlType="submit"
+                            loading={loading}    
                     >
                         Gửi
                     </Button>

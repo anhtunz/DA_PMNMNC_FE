@@ -12,6 +12,7 @@ import HistoryWorkshiftStaffPage from '../pages/workshift-staff/HistoryWorkshift
 import ProtectedRoute from './protectedRoute'
 import ApplicationConstants from '../constant/ApplicationConstant'
 import AddShiftPage from '../pages/ShiftManagement/addshift'
+import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: 'add-shift',
         element: <AddShiftPage />
+      },
+      {
+        path: 'list-of-shifts',
+        element: <GetAllShiftsPage/>
       }
     ]
   },
