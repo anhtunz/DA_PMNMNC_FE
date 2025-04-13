@@ -50,6 +50,14 @@ const items: MenuItem[] = [
       { key: '/workshift-staff', label: 'Được đăng ký' },
       { key: '/history-workshift-staff', label: 'Lịch sử ca làm' }
     ]
+  },
+  {
+    key: 'sub6',
+    label: 'Quản lý ca làm',
+    icon: <ClockCircleOutlined />,
+    children: [
+      { key: '/add-shift', label: 'Thêm mới ca làm' },
+    ]
   }
 ]
 
