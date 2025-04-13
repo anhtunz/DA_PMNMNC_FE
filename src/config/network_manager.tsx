@@ -18,7 +18,7 @@ class NetworkManager {
           'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-        Authorization: `Bearer ${token}` || ''
+        ...(token && token !== '' ? { Authorization: `Bearer ${token}` } : {})
       }
     })
   }

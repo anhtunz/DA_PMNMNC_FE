@@ -5,17 +5,21 @@ import APIPathConstants from '../constant/ApiPathConstants'
 import cookieStorage from '../components/helpers/cookieHandler'
 import ApplicationConstants from '../constant/ApplicationConstant'
 import useUserStore from '../stores/userStore'
-
+import { useDispatch } from 'react-redux'
+import { setAuth, setLoading as setReduxLoading } from '../stores'
+import { userNavigate } from 'react-router-dom'
 type AuthContextType = {
   isAuthenticated: boolean
   loading: boolean
   user: any
+  lougout: () => void
 }
 
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   loading: true,
   user: null,
+  lougout: () => {}
 })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

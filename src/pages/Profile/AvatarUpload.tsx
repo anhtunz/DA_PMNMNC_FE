@@ -10,6 +10,7 @@ import { updateAvatarSuccess } from '../../stores/slice/user/userProfileSlice'
 import { UserOutlined } from '@ant-design/icons';
 
 
+
 const AvatarUpload: React.FC = () => {
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()

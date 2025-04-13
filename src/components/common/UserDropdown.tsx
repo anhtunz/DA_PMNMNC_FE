@@ -1,12 +1,37 @@
-import { Dropdown, MenuProps } from 'antd'
+import { Dropdown, MenuProps, Modal } from 'antd'
 import { useState } from 'react'
-import { SettingOutlined } from '@ant-design/icons'
+import { LogoutOutlined, SettingOutlined, UndoOutlined } from '@ant-design/icons'
 import useUserStore from '../../stores/userStore'
+import { useNavigate } from 'react-router-dom'
+import { clearAuth } from '../../stores'
+import { useDispatch } from 'react-redux'
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { user } = useUserStore()
+  const { user, logout } = useUserStore()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   function toggleDropdown() {
     setIsOpen(!isOpen)
+  }
+  const handleMenuClick = (key: string) => {
+    if (key === '2') {
+      navigate('/profile')
+    }
+  }
+  
+    const handleLougout = () => {
+      Modal.confirm({
+        title: 'Logout',
+        content: 'Bạn có chắc chắn muốn đăng xuất không?',
+        okText: 'Đăng xuất',
+        cancelText: 'Hủy',
+        onOk: () => {
+          logout()
+          dispatch(clearAuth())
+          navigate('/login')
+        }
+
+      });
   }
 
   const items: MenuProps['items'] = [
@@ -21,12 +46,16 @@ const UserDropdown = () => {
     {
       key: '2',
       label: 'Profile',
-      extra: '⌘P'
+      extra: '⌘P',
+      onClick: () => handleMenuClick('2')
     },
     {
       key: '3',
-      label: 'Billing',
-      extra: '⌘B'
+      label: 'Đăng xuất',
+      icon: <LogoutOutlined />,
+      danger: true,
+      onClick: handleLougout
+      
     },
     {
       key: '4',
