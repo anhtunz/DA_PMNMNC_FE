@@ -10,6 +10,83 @@ import { optionStaff } from '../../assets/dataset/optionStaff'
 import { formatDateByDMY, formatDateByYMD } from '../../components/helpers/formatNowDate'
 import { useSelectOption } from '../../hooks/useSelectOption'
 const HistoryWorkshiftStaffPage = () => {
+  const shiftStaff = [
+    {
+      id: 0,
+      staffname: 'anh quan',
+      shift: [
+        {
+          workDate: '11/04/2025',
+          detail: [
+            {
+              shiftname: 'ca 1',
+              startTime: '6:00:00',
+              endTime: '8:00:00',
+            },
+            {
+              shiftname: 'ca 2',
+              startTime: '8:00:00',
+              endTime: '10:00:00',
+            }
+          ]
+        },
+        {
+          workDate: '12/04/2025',
+          detail: [
+            {
+              shiftname: 'ca 1',
+              startTime: '6:00:00',
+              endTime: '8:00:00',
+            },
+            {
+              shiftname: 'ca 2',
+              startTime: '8:00:00',
+              endTime: '10:00:00',
+
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 1,
+      staffname: 'tuan',
+      shift: [
+        {
+          workDate: '11/04/2025',
+          detail: [
+            {
+              shiftname: 'ca 1',
+              startTime: '6:00:00',
+              endTime: '8:00:00',
+
+            },
+            {
+              shiftname: 'ca 2',
+              startTime: '8:00:00',
+              endTime: '10:00:00',
+
+            }
+          ]
+        },
+        {
+          workDate: '12/04/2025',
+          detail: [
+            {
+              shiftname: 'ca 1',
+              startTime: '6:00:00',
+              endTime: '8:00:00',
+            },
+            {
+              shiftname: 'ca 2',
+              startTime: '8:00:00',
+              endTime: '10:00:00',
+            }
+          ]
+        }
+      ]
+    }
+  ]
   const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
 
   const [open, setOpen] = useState(false)
@@ -92,8 +169,31 @@ const HistoryWorkshiftStaffPage = () => {
           </Button>
         </Popover>
       </div>
-      <div>
-        <TableComponent columns={columns} dataSource={data} pageSizeCustom={5} />
+      <div className='flex flex-col gap-6 '>
+        {shiftStaff.map((item) => (
+          <div className='flex flex-col gap-4 border bg-gray-50 rounded-xl p-5'>
+            <span className='font-bold text-2xl'>Image {item.staffname} (email)</span>
+            <div className='flex flex-col gap-3'>
+              {item.shift.map((infoShift) => (
+                <div className='flex flex-col gap-3'>
+                  <span className='font-bold italic'>Ngày: {infoShift.workDate}</span>
+                  <section className='flex flex-col gap-3'>
+                    {infoShift.detail.map((detail) => (
+                      <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md'>
+                        <div className='flex flex-col gap-2 w-[35%]'>
+                          <span className='font-bold text-blue-400'>{detail.shiftname}</span>
+                          <span className='text-gray-400'>
+                            Thời gian: {detail.startTime} - {detail.endTime}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )

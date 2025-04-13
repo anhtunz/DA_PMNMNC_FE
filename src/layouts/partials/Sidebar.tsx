@@ -9,47 +9,11 @@ type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [
   {
     key: 'sub1',
-    label: 'Navigation One',
-    icon: <MailOutlined />,
-    children: [
-      {
-        key: 'g1',
-        label: 'Item 1',
-        type: 'group',
-        children: [
-          { key: '/employees', label: 'Option 1' },
-          { key: '2', label: 'Option 2' }
-        ]
-      },
-      {
-        key: 'g2',
-        label: 'Item 2',
-        type: 'group',
-        children: [
-          { key: '3', label: 'Option 3' },
-          { key: '4', label: 'Option 4' }
-        ]
-      }
-    ]
-  },
-  {
-    key: 'sub4',
-    label: 'Navigation Three',
-    icon: <SettingOutlined />,
-    children: [
-      { key: '9', label: 'Option 9' },
-      { key: '10', label: 'Option 10' },
-      { key: '11', label: 'Option 11' },
-      { key: '12', label: 'Option 12' }
-    ]
-  },
-  {
-    key: 'sub5',
-    label: 'Ca làm nhân viên',
+    label: 'Quản lý ca làm',
     icon: <ClockCircleOutlined />,
     children: [
-      { key: '/workshift-staff', label: 'Được đăng ký' },
-      { key: '/history-workshift-staff', label: 'Lịch sử ca làm' }
+      { key: '/history-workshift-staff', label: 'Lịch sử ca làm' },
+      { key: '/workshift-staff', label: 'Duyệt ca làm' }
     ]
   },
   {
