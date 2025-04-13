@@ -11,6 +11,9 @@ class APIPathConstants {
   // Quan ly users (ADMIN or SUPERADMIN)
   static readonly ADMIN_BLOCK_OR_UNBLOCK_USER = 'admin/users/block'
   static readonly ADMIN_GET_ALL_USERS = 'admin/users'
+  static readonly ADMIN_CREATE_USER = 'admin/create-user'
+  static readonly ADMIN_RESET_PASSWORD = 'admin/reset-password'
+  static readonly SUPERADMIN_SET_OR_REMOVE_ROLE = 'superadmin/admin-role'
 }
 
 export default APIPathConstants
