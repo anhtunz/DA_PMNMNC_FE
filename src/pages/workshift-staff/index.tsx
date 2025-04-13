@@ -2,47 +2,30 @@ import { useState } from 'react'
 import { Button, Popover } from 'antd'
 import { FilterOutlined } from '@ant-design/icons'
 import SelectOption from '../../components/common/SelectOption'
-import TableComponent from '../../components/common/TableComponent'
-import ConfirmModal from '../../components/common/ConfirmModal'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import { formatDateByYMD, formatDateByDMY } from '../../components/helpers/formatNowDate'
-import { data, columns } from '../../assets/dataset/tableContent'
 import { optionStaff } from '../../assets/dataset/optionStaff'
 import { useSelectOption } from '../../hooks/useSelectOption'
 import { getCurrentWeek, getCurrentMonth } from '../../components/helpers/dateRange'
+import { timeFilterOption } from '../../assets/dataset/timeFilerOption'
 const WorkshiftStaffPage = () => {
-  const optionTime = [
-    {
-      value: 'week',
-      label: 'Tuần này'
-    },
-    {
-      value: 'month',
-      label: 'Tháng này'
-    }
-  ]
 
   const { selected: selectedSingle, handleSelect: handleSelectSingle } = useSelectOption(false)
   const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
 
-
-  const handleRemoveItem = (key: string) => {
-    console.log(key)
-  }
   const [open, setOpen] = useState(false)
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
   }
   const handleCallApi = (open: boolean) => {
     setOpen(!open)
   }
-  /** Xử lí dữ liệu date 
+  /** Xử lí dữ liệu date
    * @param {nowFormatYMD} - là ngày hiện tại theo định dạng YYYY/MM/DD
    * @param {nowFormatDMY} - là ngày hiện tại theo định dạng DD/MM/YYYY
    * @param {rangeDate} - là khoảng thời gian được chọn
    * @param {onChange} - là hàm xử lí khi chọn khoảng thời gian
-  */
+   */
   const now = new Date()
   const dateFormatYMD = formatDateByYMD(now)
   const dateFormatDMY = formatDateByDMY(now)
@@ -53,10 +36,11 @@ const WorkshiftStaffPage = () => {
 
   let timeWeek, timeMonth
   if (selectedSingle === 'week') {
-    timeWeek = getCurrentWeek(dateFormatYMD);
+    timeWeek = getCurrentWeek(dateFormatYMD)
   } else if (selectedSingle === 'month') {
-    timeMonth = getCurrentMonth(dateFormatYMD);
+    timeMonth = getCurrentMonth(dateFormatYMD)
   }
+
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
@@ -74,7 +58,7 @@ const WorkshiftStaffPage = () => {
                 />
                 <div className='flex gap-4'>
                   <SelectOption
-                    optionData={optionTime}
+                    optionData={timeFilterOption}
                     isMultiSelect={false}
                     placeholder='Chọn thời gian'
                     customWidth='50%'
@@ -104,23 +88,6 @@ const WorkshiftStaffPage = () => {
             Filter
           </Button>
         </Popover>
-      </div>
-      <div>
-        <TableComponent
-          columns={columns}
-          dataSource={data}
-          pageSizeCustom={5}
-          actions={(record) => (
-            <ConfirmModal
-              type='default'
-              variant='solid'
-              color='danger'
-              confirmContent={'Bạn có chắc chắn muốn xoá không'}
-              handleOk={() => handleRemoveItem(record.key)}
-              btnText={'Delete'}
-            />
-          )}
-        />
       </div>
     </div>
   )
