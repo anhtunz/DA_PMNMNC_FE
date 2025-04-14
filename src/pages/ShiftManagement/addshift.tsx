@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Form, Input, TimePicker, FormProps, Button } from 'antd';
+import { Form, Input, TimePicker, FormProps, Button, message } from 'antd';
 import dayjs, { Dayjs } from "dayjs";
 import { NetworkManager } from "../../config/network_manager";
 import StatusCodeConstants from "../../constant/StatusCodeConstants";
-import ToastMessage from "../../components/common/ToastMessage";
 import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
@@ -22,7 +21,7 @@ const AddShiftPage: React.FC = () => {
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
        
         if (values.time_start?.isAfter(values.time_end)) {
-            ToastMessage({ msg: `{"Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc"}`, position: 'top-right', type: 'error' })
+            message.error("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc", 2)
             return;
         }
 
@@ -36,7 +35,6 @@ const AddShiftPage: React.FC = () => {
                 time_start: start,
                 time_end: end
             })
-            // console.log(values);
         }
         
     };
@@ -60,19 +58,14 @@ const AddShiftPage: React.FC = () => {
                 console.error('Response is undefined')
                 return
             }
-
-            console.log(response);
-            // console.log(values);
             
             if (response.status === StatusCodeConstants.OK) {
-                // ToastMessage({ msg: `Thêm thành công`, position: 'top-right', type: 'success' })
                 navigate('/list-of-shifts')
-            } else if (response.status === StatusCodeConstants.BAD_REQUEST) {
-                ToastMessage({ msg: `HTTP 400 Bad Request`, position: 'top-right', type: 'error' })
-            } else if (response.status === StatusCodeConstants.UNAUTHORIZED) {
-                ToastMessage({ msg: `HTTP 401 Unauthorized`, position: 'top-right', type: 'error' })
+            } else {
+                message.error(response?.data?.message, 2)
             }
             setLoading(false);
+
         } catch (e) {
             console.log(e)
         }
