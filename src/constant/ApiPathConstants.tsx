@@ -2,6 +2,8 @@ class APIPathConstants {
   static readonly LOGIN_PATH = 'auth/login'
   static readonly TEST_PATH = 'auth/test'
   static readonly REFRESH_TOKEN_PATH = 'auth/refresh-token'
+  static readonly FORGOT_PASSWORD_PATH = 'auth/forgot-password'
+  static readonly REFRESH_PASS_PATH = 'auth/refresh-password'
   //quan ly thong tin user
   static readonly GET_USER_INFO = 'user-info/get-info'
   static readonly UPDATE_AVATAR = 'user-info/update-avatar'

@@ -16,6 +16,8 @@ import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
 import AddShiftPage from '../pages/ShiftManagement/addshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
+import NewLogin from '../pages/New Login/main'
+import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 
 const router = createBrowserRouter([
   {
@@ -60,22 +62,42 @@ const router = createBrowserRouter([
       },
       {
         path: 'list-of-shifts',
-        element: <GetAllShiftsPage/>
+        element: <GetAllShiftsPage />
       }
     ]
   },
   {
     path: '/login',
-    element: <PublicRoute><Login /></PublicRoute>,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    )
+  },
+  {
+    path: '/new-login',
+    element: (
+      <PublicRoute>
+        <NewLogin />
+      </PublicRoute>
+    )
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <PublicRoute>
+        <ForgetPassword />
+      </PublicRoute>
+    )
   },
   {
     path: '/unauthorized',
-    element: <Unauthorized />,
+    element: <Unauthorized />
   },
   {
     path: '*',
-    element: <NotFound />,
-  },
+    element: <NotFound />
+  }
 ])
 
 const AppRouter = () => <RouterProvider router={router} />
