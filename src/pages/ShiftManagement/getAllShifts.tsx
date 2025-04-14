@@ -125,18 +125,26 @@ const GetAllShiftsPage: React.FC = () => {
     {
       title: "Tên",
       dataIndex: "name",
+      key: "name",
+      sorter: (a: any, b: any) => a.name.localeCompare(b.name),
     },
     {
       title: "Mô tả",
       dataIndex: "description",
+      key: "description",
+      sorter: (a: any, b: any) => a.description.localeCompare(b.description),
     },
     {
       title: "Bắt đầu",
       dataIndex: "time_start",
+      key: "time_start",
+      sorter: (a: any, b: any) => a.time_start.localeCompare(b.time_start),
     },
     {
       title: "Kết thúc",
       dataIndex: "time_end",
+      key: "time_end",
+      sorter: (a: any, b: any) => a.time_end.localeCompare(b.time_end),
     },
     {
         title: "Hành động",
@@ -167,7 +175,7 @@ const GetAllShiftsPage: React.FC = () => {
         <Form form={form} layout="vertical">
           <Form.Item 
           name="name" 
-          label="Tên ca làm" 
+          label={<span className="font-medium text-gray-700">Tên ca làm</span>}
           rules={[{ required: true, message: "Vui lòng nhập tên!" },
                   {
                     pattern: /^[a-zA-Z0-9\s\u00C0-\u1EF9]*$/,
@@ -179,7 +187,7 @@ const GetAllShiftsPage: React.FC = () => {
           </Form.Item>
           <Form.Item 
           name="description" 
-          label="Mô tả"
+          label={<span className="font-medium text-gray-700">Mô tả</span>}
           rules={[{ required: true, message: "Vui lòng nhập mô tả!" },
                   {
                     pattern: /^[a-zA-Z0-9\s\u00C0-\u1EF9]*$/,
@@ -196,15 +204,56 @@ const GetAllShiftsPage: React.FC = () => {
               className="rounded-lg"
             />
           </Form.Item>
-          <Form.Item name="time_start" label="Giờ bắt đầu" rules={[{ required: true }]}>
-            <TimePicker format="HH:mm:ss" />
-          </Form.Item>
-          <Form.Item name="time_end" label="Giờ kết thúc" rules={[{ required: true }]}>
-            <TimePicker format="HH:mm:ss" />
+
+          <Form.Item
+            shouldUpdate
+            noStyle
+          >
+          
+          <div className="flex flex-col md:flex-row gap-4">
+            <Form.Item
+                label={<span className="font-medium text-gray-700">Thời gian bắt đầu</span>}
+                name="time_start"
+                dependencies={['time_end']}
+                className="w-full md:w-1/2"
+                rules={[{ required: true, message: "Vui lòng chọn thời gian bắt đầu!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const end = getFieldValue('time_end');
+                      if (!end || !value) return Promise.resolve();
+                      if (end.isAfter(value)) return Promise.resolve();
+                      return Promise.reject('Thời gian bắt đầu phải trước thời gian kết thúc');
+                    }
+                  })
+                ]}
+            >
+                <TimePicker format="HH:mm:ss" className="w-full rounded-lg" />
+            </Form.Item>
+          
+            <Form.Item
+                label={<span className="font-medium text-gray-700">Thời gian kết thúc</span>}
+                name="time_end"
+                dependencies={['time_start']}
+                className="w-full md:w-1/2"
+                rules={[{ required: true, message: "Vui lòng chọn thời gian kết thúc!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const start = getFieldValue('time_start');
+                      if (!start || !value) return Promise.resolve();
+                      if (start.isBefore(value)) return Promise.resolve();
+                      return Promise.reject('Thời gian kết thúc phải sau thời gian bắt đầu');
+                    }
+                  })
+                ]}
+            >
+                <TimePicker format="HH:mm:ss" className="w-full rounded-lg" />
+            </Form.Item>
+            </div>
+            
           </Form.Item>
         </Form>
       </Modal>
-    </>
+  </>
   ) 
 } 
 
