@@ -141,7 +141,7 @@ function ShiftRegistration() {
     }
     
     const formattedDate = formatDate(date);
-    const shiftsForDay = [1, 2, 3, 4, 5].map(shift => `${shift}-${formattedDate}`);
+    const shiftsForDay = [1, 2, 3, 4].map(shift => `${shift}-${formattedDate}`);
     
     const allSelected = shiftsForDay.every(key => selectedShifts[key]);
     
@@ -241,7 +241,7 @@ function ShiftRegistration() {
             </tr>
           </thead>
           <tbody>
-            {[1, 2, 3, 4, 5].map(shift => (
+            {[1, 2, 3, 4].map(shift => (
               <tr key={shift}>
                 <td
                   className="border border-gray-300 p-4 text-center font-medium cursor-pointer hover:bg-gray-100"

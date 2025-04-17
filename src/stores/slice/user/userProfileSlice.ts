@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+
 export interface UserProfile {
   id: number | null
   name: string | null
   email: string | null
   address: string | null
-  gender: number | null
+  gender: string | null
   dateOfBirth: string | null
   avatar: string | null
   loading: boolean
@@ -29,7 +30,7 @@ interface UserProfilePayload {
   name: string
   email: string
   address: string | null
-  gender: number
+  gender: string
   dateOfBirth: string | null
   avatar: string | null
 }

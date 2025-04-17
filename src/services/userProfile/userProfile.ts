@@ -84,7 +84,7 @@ export const getUserInfo = async () => {
 // Update user information
 export const updateUserInfo = async (data: {
   name: string
-  gender: number
+  gender: string
   address: string | null
   dateOfBirth: string | null
 }) => {
