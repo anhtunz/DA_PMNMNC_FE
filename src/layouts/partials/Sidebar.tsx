@@ -27,6 +27,15 @@ const items: MenuItem[] = [
     icon: <ClockCircleOutlined />
   },
   {
+    key: 'sub6',
+    label: 'Quản lý ca làm',
+    icon: <ClockCircleOutlined />,
+    children: [
+      { key: '/add-shift', label: 'Thêm ca làm mới' },
+      { key: '/list-of-shifts', label: 'Danh sách ca làm' }
+    ]
+  },
+  {
     key: `/${ApplicationConstants.USERS_MANAGER_PATH}`,
     label: ApplicationConstants.USERS_MANAGER_PATH_NAME,
     icon: (
