@@ -14,14 +14,13 @@ import ApplicationConstants from '../constant/ApplicationConstant'
 import ProfilePage from '../pages/Profile/index'
 import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
+import PersonalWorkshift from '../pages/workshift-staff/PersonalWorkshift'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]}>
-        <MainLayout />
-      </ProtectedRoute>
+      <MainLayout />
     ),
     children: [
       {
@@ -41,12 +40,16 @@ const router = createBrowserRouter([
         element: <HistoryWorkshiftStaffPage />
       },
       {
+        path: ApplicationConstants.PERSONAL_HISTORY_WORKSHIFT,
+        element: <PersonalWorkshift />
+      },
+      {
         path: 'profile',
         element: <ProfilePage /> // Assuming you have a ProfilePage component
       },
       {
         path: 'shift-registration',
-        element: <ShiftRegistration /> // Assuming you have a ShiftRegistration component
+        element: <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]}><ShiftRegistration /></ProtectedRoute> // Assuming you have a ShiftRegistration component
       },
       {
         path: ApplicationConstants.USERS_MANAGER_PATH,
