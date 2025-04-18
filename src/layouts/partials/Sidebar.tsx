@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, PieChartOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -8,6 +8,11 @@ import ApplicationConstants from '../../constant/ApplicationConstant'
 type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [
   {
+    key: ApplicationConstants.DASHBOARD_PATH,
+    label: 'Dashboard',
+    icon: <PieChartOutlined />,
+  },
+  {
     key: 'sub1',
     label: 'Quản lý ca làm',
     icon: <ClockCircleOutlined />,
@@ -15,11 +20,6 @@ const items: MenuItem[] = [
       { key: '/history-workshift-staff', label: 'Lịch sử ca làm' },
       { key: '/workshift-staff', label: 'Duyệt ca làm' }
     ]
-  },
-  {
-    key: '/shift-registration',
-    label: 'Đăng ký ca làm',
-    icon: <ClockCircleOutlined />
   },
   {
     key: '/shift-registration',
@@ -71,7 +71,6 @@ export default function Sidebar({
     navigate(`${e.key}`)
     setDefaultKey(`${e.key}`)
   }
-  console.log(selectedKey)
   return !isMd ? (
     <div className='h-dvh bg-white overflow-auto '>
       <Sider trigger={null} collapsible collapsed={collapsed} className='fixed top-0 left-0  max-md:hidden'>
