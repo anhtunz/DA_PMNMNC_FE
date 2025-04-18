@@ -1,11 +1,11 @@
 import { DatePicker, Space } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 interface RangeCalendarProps {
   startDate?: string
   endDate?: string
   isDisableFirstDay?: boolean
   isDisableLastDay?: boolean
-  onChange?: (range: { firstDay: string | null; lastDay: string | null }) => void
+  onChange?: (range: { firstDay: Dayjs | null; lastDay: Dayjs | null }) => void
 }
 
 const RangeCalendarComponent = ({
@@ -27,7 +27,13 @@ const RangeCalendarComponent = ({
           }
           : {})}
         disabled={[isDisableFirstDay ?? false, isDisableLastDay ?? false]}
-        onChange={(_date, toDateString) => onChange?.({ firstDay: toDateString[0], lastDay: toDateString[1] })}
+        onChange={(dates) => {
+          onChange?.({
+            firstDay: dates?.[0] ?? null,
+            lastDay: dates?.[1] ?? null
+          });
+        }}
+
       />
     </Space>
   )
