@@ -10,6 +10,8 @@ class ApplicationConstants {
     // Web Path
     static readonly USERS_MANAGER_PATH = 'users-manager'
     static readonly USERS_MANAGER_PATH_NAME = 'Quản lý người dùng'
+    static readonly DASHBOARD_PATH = '/dashboard'
+    static readonly PERSONAL_HISTORY_WORKSHIFT = '/personal-history-workshift'
 }
 
 export default ApplicationConstants
