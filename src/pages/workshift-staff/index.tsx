@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Button, Popover } from 'antd'
-import { FilterOutlined } from '@ant-design/icons'
+import dayjs, { Dayjs } from 'dayjs'
 import SelectOption from '../../components/common/SelectOption'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import { formatDateByYMD, formatDateByDMY } from '../../components/helpers/formatNowDate'
@@ -8,17 +7,24 @@ import { optionStaff } from '../../assets/dataset/optionStaff'
 import { useSelectOption } from '../../hooks/useSelectOption'
 import { getCurrentWeek, getCurrentMonth } from '../../components/helpers/dateRange'
 import { timeFilterOption } from '../../assets/dataset/timeFilerOption'
+import Filter from '../../components/common/Filter'
 const WorkshiftStaffPage = () => {
 
   const { selected: selectedSingle, handleSelect: handleSelectSingle } = useSelectOption(false)
   const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
 
   const [open, setOpen] = useState(false)
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen)
-  }
-  const handleCallApi = (open: boolean) => {
-    setOpen(!open)
+  const [loading, setLoading] = useState(false)
+  const handleCallApi = () => {
+    try {
+      setLoading(true)
+    } catch (error) {
+      setLoading(false)
+      console.log(error);
+    } finally {
+      setLoading(false)
+      setOpen(false)
+    }
   }
   /** Xử lí dữ liệu date
    * @param {nowFormatYMD} - là ngày hiện tại theo định dạng YYYY/MM/DD
@@ -29,10 +35,15 @@ const WorkshiftStaffPage = () => {
   const now = new Date()
   const dateFormatYMD = formatDateByYMD(now)
   const dateFormatDMY = formatDateByDMY(now)
-  const [rangeDate, setRangeDate] = useState({ startDate: dateFormatYMD, endDate: dateFormatYMD })
-  const onChange = (range: { firstDay: string | null; lastDay: string | null }) => {
-    setRangeDate({ startDate: range.firstDay ?? dateFormatYMD, endDate: range.lastDay ?? dateFormatYMD })
-  }
+  const [rangeDate, setRangeDate] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({ startDate: null, endDate: null })
+  const onChange = (range: { firstDay: Dayjs | null; lastDay: Dayjs | null }) => {
+    let startDate = range.firstDay?.format('YYYY-MM-DD HH:mm:ss');
+    let endDate = range.lastDay?.format('YYYY-MM-DD HH:mm:ss');
+    setRangeDate({
+      startDate: startDate ? dayjs(startDate) : null,
+      endDate: endDate ? dayjs(endDate) : null,
+    });
+  };
 
   let timeWeek, timeMonth
   if (selectedSingle === 'week') {
@@ -40,54 +51,38 @@ const WorkshiftStaffPage = () => {
   } else if (selectedSingle === 'month') {
     timeMonth = getCurrentMonth(dateFormatYMD)
   }
+  console.log(rangeDate);
+  console.log(timeWeek);
+  console.log(timeMonth);
 
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
         <span className='font-bold'>Ngày hôm nay: {`${dateFormatDMY}`}</span>
-        <Popover
-          content={
-            <div className='flex justify-center items-end flex-col p-3 gap-3 sm:w-[400px] max-w-full'>
-              <div className='flex flex-col justify-start items-start md:items-start gap-3 w-full'>
-                <SelectOption
-                  optionData={optionStaff}
-                  isMultiSelect={true}
-                  placeholder='Chọn nhân viên'
-                  customWidth='100%'
-                  onChange={handleSelecteMulti}
-                />
-                <div className='flex gap-4'>
-                  <SelectOption
-                    optionData={timeFilterOption}
-                    isMultiSelect={false}
-                    placeholder='Chọn thời gian'
-                    customWidth='50%'
-                    onChange={handleSelectSingle}
-                  />
-                  <RangeCalendarComponent
-                    startDate={rangeDate.startDate}
-                    endDate={rangeDate.endDate}
-                    isDisableFirstDay={true}
-                    onChange={onChange}
-                  />
-                </div>
-              </div>
-              <Button type='primary' style={{ width: 'fit-content' }} onClick={() => handleCallApi(open)}>
-                Tìm kiếm
-              </Button>
-            </div>
-          }
-          title='Lọc kết quả'
-          trigger='click'
-          placement='bottomRight'
-          open={open}
-          onOpenChange={handleOpenChange}
-        >
-          <Button type='primary'>
-            <FilterOutlined />
-            Filter
-          </Button>
-        </Popover>
+        <Filter open={open} setOpen={setOpen} loading={loading} handleApi={handleCallApi}>
+          <SelectOption
+            optionData={optionStaff}
+            isMultiSelect={true}
+            placeholder='Chọn nhân viên'
+            customWidth='100%'
+            onChange={handleSelecteMulti}
+          />
+          <div className='flex gap-4'>
+            <SelectOption
+              optionData={timeFilterOption}
+              isMultiSelect={false}
+              placeholder='Chọn thời gian'
+              customWidth='50%'
+              onChange={handleSelectSingle}
+            />
+            <RangeCalendarComponent
+              startDate={rangeDate.startDate?.format('YYYY-MM-DD') || dateFormatYMD}
+              endDate={rangeDate.endDate?.format('YYYY-MM-DD') || dateFormatYMD}
+              isDisableFirstDay={true}
+              onChange={onChange}
+            />
+          </div>
+        </Filter>
       </div>
     </div>
   )
