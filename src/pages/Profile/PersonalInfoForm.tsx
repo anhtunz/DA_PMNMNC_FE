@@ -67,6 +67,13 @@ console.log("formattedValues gửi lên:", formattedValues)
         className="max-w-md"
       >
         <Form.Item
+          name="email"
+          label="Email"
+        >
+          <Input disabled />
+        </Form.Item>
+        
+        <Form.Item
           name="name"
           label="Tên đầy đủ"
           rules={[{ required: true, message: 'Vui lòng nhập tên của bạn' }]}
@@ -74,12 +81,7 @@ console.log("formattedValues gửi lên:", formattedValues)
           <Input />
         </Form.Item>
 
-        <Form.Item
-          name="email"
-          label="Email"
-        >
-          <Input disabled />
-        </Form.Item>
+        
 
         <Form.Item
           name="gender"
