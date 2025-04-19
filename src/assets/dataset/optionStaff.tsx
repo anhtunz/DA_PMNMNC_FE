@@ -1,4 +1,48 @@
-export const optionStaff = [
+import { useState, useEffect } from 'react';
+import { NetworkManager } from '../../config/network_manager';
+import APIPathConstants from '../../constant/ApiPathConstants';
+
+// Interface cho dữ liệu nhân viên
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  isAdmin?: boolean;
+  isBlock?: boolean;
+}
+
+// Interface cho option staff
+export interface StaffOption {
+  value: string;
+  label: string;
+}
+
+// Hàm lấy dữ liệu nhân viên từ API
+export const fetchStaffOptions = async (): Promise<StaffOption[]> => {
+  try {
+    const response = await NetworkManager.instance.getDataFromServer(APIPathConstants.ADMIN_GET_ALL_USERS);
+
+    if (response && response.status === 200 && response.data && response.data.data) {
+      const users: User[] = response.data.data;
+
+      // Chuyển đổi dữ liệu nhân viên sang định dạng options
+      return users.map(user => ({
+        value: user.id, // Sử dụng userId làm value
+        label: `${user.name} (${user.email})` // Hiển thị tên + email
+      }));
+    } else {
+      console.error('Failed to fetch user data:', response);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching staff options:', error);
+    return [];
+  }
+};
+
+// Dữ liệu mặc định khi không có dữ liệu từ API
+export const optionStaff: StaffOption[] = [
   {
     value: 'nv1',
     label: 'Nhân viên A'
@@ -43,4 +87,4 @@ export const optionStaff = [
     value: 'nv11',
     label: 'Nhân viên L'
   }
-]
+];

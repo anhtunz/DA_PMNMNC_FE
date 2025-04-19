@@ -1,11 +1,17 @@
-import { Layout } from 'antd'
-import { Outlet } from 'react-router-dom'
+import { Layout, Spin } from 'antd'
+import { Navigate, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
 import Sidebar from './partials/Sidebar'
 import Headers from './partials/Header'
+import { useAuth } from '../context/AuthContext'
+import { LoadingOutlined } from '@ant-design/icons'
 const { Content } = Layout
 const MainLayout = () => {
+  const { isAuthenticated, authChecked } = useAuth()
+
+  if (!authChecked) return <Spin fullscreen indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+  if (!isAuthenticated) return <Navigate to="/login" replace />
   const [expanded, setExpanded] = useState(true)
   const [isMd, setIsMd] = useState(false)
   useEffect(() => {

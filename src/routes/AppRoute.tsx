@@ -14,15 +14,17 @@ import ApplicationConstants from '../constant/ApplicationConstant'
 import ProfilePage from '../pages/Profile/index'
 import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
+import PersonalWorkshift from '../pages/workshift-staff/PersonalWorkshift'
+import AddShiftPage from '../pages/ShiftManagement/addshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
+import NewLogin from '../pages/New Login/main'
+import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]}>
-        <MainLayout />
-      </ProtectedRoute>
+      <MainLayout />
     ),
     children: [
       {
@@ -42,12 +44,16 @@ const router = createBrowserRouter([
         element: <HistoryWorkshiftStaffPage />
       },
       {
+        path: ApplicationConstants.PERSONAL_HISTORY_WORKSHIFT,
+        element: <PersonalWorkshift />
+      },
+      {
         path: 'profile',
         element: <ProfilePage /> // Assuming you have a ProfilePage component
       },
       {
         path: 'shift-registration',
-        element: <ShiftRegistration /> // Assuming you have a ShiftRegistration component
+        element: <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]}><ShiftRegistration /></ProtectedRoute> // Assuming you have a ShiftRegistration component
       },
       {
         path: ApplicationConstants.USERS_MANAGER_PATH,
@@ -55,22 +61,42 @@ const router = createBrowserRouter([
       },
       {
         path: 'list-of-shifts',
-        element: <GetAllShiftsPage/>
+        element: <GetAllShiftsPage />
       }
     ]
   },
   {
     path: '/login',
-    element: <PublicRoute><Login /></PublicRoute>,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    )
+  },
+  {
+    path: '/new-login',
+    element: (
+      <PublicRoute>
+        <NewLogin />
+      </PublicRoute>
+    )
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <PublicRoute>
+        <ForgetPassword />
+      </PublicRoute>
+    )
   },
   {
     path: '/unauthorized',
-    element: <Unauthorized />,
+    element: <Unauthorized />
   },
   {
     path: '*',
-    element: <NotFound />,
-  },
+    element: <NotFound />
+  }
 ])
 
 const AppRouter = () => <RouterProvider router={router} />

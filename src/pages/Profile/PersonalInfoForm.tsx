@@ -20,7 +20,7 @@ const PersonalInfoForm: React.FC = () => {
       form.setFieldsValue({
         name: profile.name,
         email: profile.email,
-        gender: profile.gender,
+        gender: String(profile.gender),
         address: profile.address || '',
         dateOfBirth: profile.dateOfBirth ? dayjs(profile.dateOfBirth) : null
       })
@@ -33,30 +33,32 @@ const PersonalInfoForm: React.FC = () => {
     try {
       const formattedValues = {
         name: values.name,
-        gender: values.gender,
+        gender: String(values.gender),
         address: values.address || null,
         dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : null
       }
+      console.log("Dữ liệu gốc:", values)
+console.log("formattedValues gửi lên:", formattedValues)
 
       const response = await updateUserInfo(formattedValues)
 
       if (response && response.status === 200) {
         dispatch(updateProfileSuccess(formattedValues))
-        messageApi.success('Profile updated successfully')
+        messageApi.success('Cập nhật thông tin thành công')
       } else {
-        dispatch(updateProfileFailure('Failed to update profile'))
-        messageApi.error('Failed to update profile')
+        dispatch(updateProfileFailure('Câp nhật thông tin thất bại'))
+        messageApi.error('Cập nhật thông tin thất bại')
       }
     } catch (error) {
-      dispatch(updateProfileFailure('An error occurred'))
-      messageApi.error('An error occurred while updating profile')
+      dispatch(updateProfileFailure('Đã xảy ra lỗi'))
+      messageApi.error('Đã xảy ra lỗi khi cập nhật hồ sơ')
     }
   }
 
   return (
     <div>
       {contextHolder}
-      <h2 className="mb-4 text-lg font-semibold">Update Personal Information</h2>
+      <h2 className="mb-4 text-lg font-semibold">Cập nhật thông tin cá nhân</h2>
 
       <Form
         form={form}
@@ -65,49 +67,51 @@ const PersonalInfoForm: React.FC = () => {
         className="max-w-md"
       >
         <Form.Item
-          name="name"
-          label="Full Name"
-          rules={[{ required: true, message: 'Please enter your name' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
           name="email"
           label="Email"
         >
           <Input disabled />
         </Form.Item>
+        
+        <Form.Item
+          name="name"
+          label="Tên đầy đủ"
+          rules={[{ required: true, message: 'Vui lòng nhập tên của bạn' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        
 
         <Form.Item
           name="gender"
-          label="Gender"
-          rules={[{ required: true, message: 'Please select gender' }]}
+          label="Giới Tính"
+          rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
         >
           <Select>
-            <Option value={0}>Male</Option>
-            <Option value={1}>Female</Option>
-            <Option value={2}>Other</Option>
+            <Option value="0">Nam</Option>
+            <Option value="1">Nữ</Option>
+            <Option value="2">Khác</Option>
           </Select>
         </Form.Item>
 
         <Form.Item
           name="address"
-          label="Address"
+          label="Địa chỉ"
         >
           <Input.TextArea rows={3} />
         </Form.Item>
 
         <Form.Item
           name="dateOfBirth"
-          label="Date of Birth"
+          label="Ngày sinh"
         >
           <DatePicker format="YYYY-MM-DD" className="w-full" />
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={profile.loading}>
-            Update Information
+          Cập nhật thông tin
           </Button>
         </Form.Item>
       </Form>

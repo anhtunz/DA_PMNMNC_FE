@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, FormProps, Input } from 'antd'
+import { Flex, Form, FormProps, Input } from 'antd'
 import LoadingButton from '../../components/common/LoadingButton'
 import { useNavigate } from 'react-router-dom'
 import useLoginHandler from '../../services/auth/loginHandler'
@@ -14,7 +14,6 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const { login } = useLoginHandler()
 
-  //Form ant design
   const onFinish: FormProps<FieldType>['onFinish'] = (value) => {
     if (value.email && value.password) {
       login({
@@ -35,7 +34,7 @@ const LoginPage = () => {
         name='basic'
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
+        style={{ maxWidth: 500 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -61,6 +60,14 @@ const LoginPage = () => {
           ]}
         >
           <Input.Password />
+        </Form.Item>
+        <Form.Item>
+          <Flex justify='space-between' align='center'>
+            <Form.Item name='remember' valuePropName='checked' noStyle>
+              <a href='/new-login'>New Login UI!</a>
+            </Form.Item>
+            <a href='/forgot-password'>Forgot password</a>
+          </Flex>
         </Form.Item>
         <Form.Item label={null}>
           <LoadingButton htmlType='submit' textButton='Submit' loading={loading} />
