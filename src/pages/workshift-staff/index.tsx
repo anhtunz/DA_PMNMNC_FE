@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Dayjs } from 'dayjs'
 import { Button, Popover, Tag, message, Modal, Spin } from 'antd'
 import { FilterOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import SelectOption from '../../components/common/SelectOption'
@@ -79,8 +80,35 @@ const WorkshiftStaffPage = () => {
   const dateFormatYMD = formatDateByYMD(now)
   const dateFormatDMY = formatDateByDMY(now)
   const [rangeDate, setRangeDate] = useState({ startDate: dateFormatYMD, endDate: dateFormatYMD })
-  const onChange = (range: { firstDay: string | null; lastDay: string | null }) => {
-    setRangeDate({ startDate: range.firstDay ?? dateFormatYMD, endDate: range.lastDay ?? dateFormatYMD })
+
+  const onChange = (range: { firstDay: Dayjs | null; lastDay: Dayjs | null }) => {
+    try {
+      console.log("RangeCalendar onChange received:", range);
+
+      // Đảm bảo không bao giờ nhận giá trị null
+      const startDate = range.firstDay ? range.firstDay.format('YYYY/MM/DD') : dateFormatYMD;
+      const endDate = range.lastDay ? range.lastDay.format('YYYY/MM/DD') : dateFormatYMD;
+
+      // Kiểm tra kiểu dữ liệu trước khi áp dụng replace
+      const formattedStartDate = typeof startDate === 'string'
+        ? startDate.replace(/-/g, '/')
+        : dateFormatYMD;
+
+      const formattedEndDate = typeof endDate === 'string'
+        ? endDate.replace(/-/g, '/')
+        : dateFormatYMD;
+
+      console.log("Setting rangeDate:", { startDate: formattedStartDate, endDate: formattedEndDate });
+
+      setRangeDate({
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+      });
+    } catch (error) {
+      console.error("Error in onChange function:", error);
+      // Fallback to default dates
+      setRangeDate({ startDate: dateFormatYMD, endDate: dateFormatYMD });
+    }
   }
 
   // Format date string (YYYY-MM-DD) to DD/MM/YYYY
@@ -90,6 +118,31 @@ const WorkshiftStaffPage = () => {
     const datePart = dateStr.split('T')[0];
     const [year, month, day] = datePart.split('-');
     return `${day}/${month}/${year}`;
+  }
+
+  // Hàm chuẩn hóa định dạng ngày tháng cho API
+  const formatDateForAPI = (dateStr: string): string => {
+    if (!dateStr) return '';
+
+    try {
+      // Nếu ngày có dạng YYYY/MM/DD, chuyển thành YYYY-MM-DD
+      const formattedDate = dateStr.replace(/\//g, '-');
+
+      // Đảm bảo định dạng YYYY-MM-DD không có phần GMT
+      if (formattedDate.includes('GMT')) {
+        // Trích xuất chỉ phần YYYY-MM-DD
+        const match = formattedDate.match(/(\d{4}-\d{2}-\d{2})/);
+        if (match) {
+          return match[1];
+        }
+      }
+
+      return formattedDate;
+    } catch (error) {
+      console.error("Error in formatDateForAPI:", error);
+      // Return original string if error occurs
+      return dateStr;
+    }
   }
 
   // Fetch user data from admin/users endpoint
@@ -146,22 +199,34 @@ const WorkshiftStaffPage = () => {
 
       // Xử lý thời gian lọc
       if (selectedSingle === 'week') {
+        // Lấy khoảng thời gian tuần hiện tại
         const [startWeek, endWeek] = getCurrentWeek(dateFormatYMD)
-        params.startDate = `${startWeek} 00:00:00`
-        params.endDate = `${endWeek} 23:59:59`
+        // Định dạng ngày tháng cho API
+        const formattedStartDate = formatDateForAPI(startWeek)
+        const formattedEndDate = formatDateForAPI(endWeek)
+        params.startDate = `${formattedStartDate} 00:00:00`
+        params.endDate = `${formattedEndDate} 23:59:59`
       } else if (selectedSingle === 'month') {
+        // Lấy khoảng thời gian tháng hiện tại
         const [startMonth, endMonth] = getCurrentMonth(dateFormatYMD)
-        params.startDate = `${startMonth} 00:00:00`
-        params.endDate = `${endMonth} 23:59:59`
+        // Định dạng ngày tháng cho API
+        const formattedStartDate = formatDateForAPI(startMonth)
+        const formattedEndDate = formatDateForAPI(endMonth)
+        params.startDate = `${formattedStartDate} 00:00:00`
+        params.endDate = `${formattedEndDate} 23:59:59`
       } else {
-        // Sử dụng trực tiếp định dạng YYYY-MM-DD
-        params.startDate = `${rangeDate.startDate} 00:00:00`
-        params.endDate = `${rangeDate.endDate} 23:59:59`
+        // Sử dụng khoảng thời gian đã chọn từ calendar
+        const formattedStartDate = formatDateForAPI(rangeDate.startDate)
+        const formattedEndDate = formatDateForAPI(rangeDate.endDate)
+        params.startDate = `${formattedStartDate} 00:00:00`
+        params.endDate = `${formattedEndDate} 23:59:59`
       }
 
       // Xử lý lọc nhân viên
       if (selectedMulti && selectedMulti.length > 0) {
-        params.userIds = Array.isArray(selectedMulti) ? selectedMulti.join(',') : selectedMulti
+        // Đảm bảo userIds là một mảng các string
+        const userIds = Array.isArray(selectedMulti) ? selectedMulti : [selectedMulti]
+        params.userIds = userIds.join(',')
       }
 
       console.log('Parameters prepared for API call:', params);
@@ -223,10 +288,19 @@ const WorkshiftStaffPage = () => {
     }
   }
 
-  // Xử lý tìm kiếm
+  // Xử lý tìm kiếm khi bấm nút Filter
   const handleSearch = () => {
-    fetchUserShifts()
-    setOpen(false)
+    console.log("Tìm kiếm với các tham số:", {
+      timeFilter: selectedSingle,
+      staffFilter: selectedMulti,
+      dateRange: rangeDate
+    });
+
+    // Gọi API để tải dữ liệu mới
+    fetchUserShifts();
+
+    // Đóng popover sau khi bấm tìm kiếm
+    setOpen(false);
   }
 
   // Xử lý chấp nhận ca làm
@@ -387,12 +461,12 @@ const WorkshiftStaffPage = () => {
     fetchShifts()
   }, [])
 
-  // Fetch user shifts when users and shifts data is loaded or filters change
+  // Fetch user shifts when users and shifts data is loaded
   useEffect(() => {
     if (users.length > 0 && shifts.length > 0) {
       fetchUserShifts()
     }
-  }, [users, shifts, selectedSingle, rangeDate, selectedMulti])
+  }, [users, shifts])
 
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>

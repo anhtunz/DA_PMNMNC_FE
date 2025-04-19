@@ -211,34 +211,102 @@ class considerUserShift {
     }
   }
 
+  // Hàm chuẩn hóa định dạng ngày tháng cho API
+  private formatDateForAPI(dateStr: string): string {
+    if (!dateStr) return '';
+
+    try {
+      // Loại bỏ phần thời gian nếu có
+      let formattedDate = dateStr;
+
+      // Nếu chuỗi có chứa dấu cách (có thể là có thời gian), chỉ lấy phần ngày
+      if (formattedDate.includes(' ')) {
+        formattedDate = formattedDate.split(' ')[0];
+      }
+
+      // Nếu ngày có dạng YYYY/MM/DD, chuyển thành YYYY-MM-DD
+      formattedDate = formattedDate.replace(/\//g, '-');
+
+      // Đảm bảo định dạng YYYY-MM-DD không có phần GMT
+      if (formattedDate.includes('GMT')) {
+        const match = formattedDate.match(/(\d{4}-\d{2}-\d{2})/);
+        if (match) {
+          return match[1];
+        }
+      }
+
+      // Kiểm tra xem có phải định dạng YYYY-MM-DD không
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (dateRegex.test(formattedDate)) {
+        return formattedDate;
+      }
+
+      // Nếu không phải định dạng chuẩn, thử chuyển đổi qua Date object
+      const date = new Date(formattedDate);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      console.warn('Không thể chuyển đổi chuỗi ngày tháng:', dateStr);
+      return formattedDate;
+    } catch (error) {
+      console.error('Lỗi khi xử lý định dạng ngày tháng:', error);
+      return dateStr;
+    }
+  }
+
   /**
    * Get all user shift registrations with filters
    * @param params The filter parameters
    * @returns The API response
    */
   async getAllUserShifts(params: Record<string, any>) {
-    // Cấu trúc yêu cầu của API: userIds là mảng chuỗi, có thể rỗng
-    const userIds = params.userIds ?
-      params.userIds.split(',').map((id: string) => id.trim()) :
-      [];
+    try {
+      // Cấu trúc yêu cầu của API: userIds là mảng chuỗi, có thể rỗng
+      const userIds = params.userIds ?
+        params.userIds.split(',').map((id: string) => id.trim()) :
+        [];
 
-    // Đảm bảo định dạng ngày tháng đúng YYYY-MM-DD
-    let startDate = params.startDate || "";
-    let endDate = params.endDate || "";
+      // Đảm bảo định dạng ngày tháng đúng YYYY-MM-DD
+      let startDate = params.startDate || "";
+      let endDate = params.endDate || "";
 
-    // Chuyển đổi từ YYYY/MM/DD sang YYYY-MM-DD nếu cần
-    startDate = startDate.replace(/\//g, '-');
-    endDate = endDate.replace(/\//g, '-');
+      // Chuẩn hóa định dạng ngày tháng
+      startDate = this.formatDateForAPI(startDate);
+      endDate = this.formatDateForAPI(endDate);
 
-    const requestBody = {
-      startDate: startDate,
-      endDate: endDate,
-      onlySending: true,
-      userIds: userIds
-    };
+      // Thêm thời gian nếu cần
+      if (startDate && !startDate.includes(' ')) {
+        startDate = `${startDate} 00:00:00`;
+      }
 
-    console.log('Request payload for getAllUserShifts:', JSON.stringify(requestBody, null, 2));
-    return this.network.createDataInServer(APIPathConstants.GET_ALL_USER_SHIFTS, requestBody);
+      if (endDate && !endDate.includes(' ')) {
+        endDate = `${endDate} 23:59:59`;
+      }
+
+      const requestBody = {
+        startDate: startDate,
+        endDate: endDate,
+        onlySending: true,
+        userIds: userIds
+      };
+
+      console.log('Request payload for getAllUserShifts:', JSON.stringify(requestBody, null, 2));
+      return this.network.createDataInServer(APIPathConstants.GET_ALL_USER_SHIFTS, requestBody);
+    } catch (error) {
+      console.error('Lỗi khi tạo request payload:', error);
+      // Trả về lỗi để component xử lý
+      return {
+        status: 500,
+        data: {
+          message: 'Lỗi khi tạo request payload',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        }
+      };
+    }
   }
 
   /**
