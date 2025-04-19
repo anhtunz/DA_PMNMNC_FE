@@ -14,7 +14,6 @@ import ApplicationConstants from '../constant/ApplicationConstant'
 import ProfilePage from '../pages/Profile/index'
 import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
-import AddShiftPage from '../pages/ShiftManagement/addshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
 
 const router = createBrowserRouter([
@@ -53,10 +52,6 @@ const router = createBrowserRouter([
       {
         path: ApplicationConstants.USERS_MANAGER_PATH,
         element: <UsersManager />
-      },
-      {
-        path: 'add-shift',
-        element: <AddShiftPage />
       },
       {
         path: 'list-of-shifts',

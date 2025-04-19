@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -22,13 +22,9 @@ const items: MenuItem[] = [
     icon: <ClockCircleOutlined />
   },
   {
-    key: 'sub6',
-    label: 'Quản lý ca làm',
-    icon: <ClockCircleOutlined />,
-    children: [
-      { key: '/add-shift', label: 'Thêm ca làm mới' },
-      { key: '/list-of-shifts', label: 'Danh sách ca làm' }
-    ]
+    key: '/list-of-shifts',
+    label: 'Danh sách ca làm',
+    icon: <ClockCircleOutlined />
   },
   {
     key: `/${ApplicationConstants.USERS_MANAGER_PATH}`,
