@@ -51,10 +51,6 @@ const WorkshiftStaffPage = () => {
   } else if (selectedSingle === 'month') {
     timeMonth = getCurrentMonth(dateFormatYMD)
   }
-  console.log(rangeDate);
-  console.log(timeWeek);
-  console.log(timeMonth);
-
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
