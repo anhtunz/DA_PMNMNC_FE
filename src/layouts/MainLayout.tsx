@@ -8,12 +8,12 @@ import { useAuth } from '../context/AuthContext'
 import { LoadingOutlined } from '@ant-design/icons'
 const { Content } = Layout
 const MainLayout = () => {
+  const [expanded, setExpanded] = useState(true)
+  const [collapsed, setCollapsed] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [isMd, setIsMd] = useState(false)
   const { isAuthenticated, authChecked } = useAuth()
 
-  if (!authChecked) return <Spin fullscreen indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-  if (!isAuthenticated) return <Navigate to="/login" replace />
-  const [expanded, setExpanded] = useState(true)
-  const [isMd, setIsMd] = useState(false)
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -35,8 +35,10 @@ const MainLayout = () => {
 
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  const [collapsed, setCollapsed] = useState(false)
-  const [open, setOpen] = useState(false)
+
+  if (!authChecked) return <Spin fullscreen indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+  if (!isAuthenticated) return <Navigate to='/login' replace />
+
   const showDrawer = () => {
     setOpen(true)
   }
@@ -44,6 +46,7 @@ const MainLayout = () => {
   const onClose = () => {
     setOpen(false)
   }
+
   return (
     <Layout className='flex w-full h-full'>
       <Sidebar collapsed={collapsed} isMd={isMd} isOpenSidebar={open} setIsOpenSidebar={onClose} />
