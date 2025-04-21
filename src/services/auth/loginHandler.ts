@@ -3,9 +3,7 @@ import loginService from './loginService'
 
 import cookieStorage from '../../components/helpers/cookieHandler'
 import ApplicationConstants from '../../constant/ApplicationConstant'
-import StatusCodeConstants from '../../constant/StatusCodeConstants'
 import { toastService } from '../toast/ToastService'
-
 interface InitialProps {
   email: string
   password: string
@@ -18,17 +16,13 @@ const useLoginHandler = () => {
     setLoading(true)
     try {
       const res = await loginService(email, password)
-      if (res.status === StatusCodeConstants.OK) {
-        const { user, token } = res.data.data
-        cookieStorage.setItem(ApplicationConstants.TOKEN, token)
-        setUser(user, token)
-        toastService.success('Đăng nhập thành công')
-        onSuccess()
-      } else {
-        toastService.error(res.data.message)
-      }
-    } catch (err) {
-      toastService.error('Hệ thống gặp sự cố!')
+      const { user, token } = res.data.data
+      cookieStorage.setItem(ApplicationConstants.TOKEN, token)
+      setUser(user, token)
+      toastService.success('Đăng nhập thành công')
+      onSuccess()
+    } catch (err: any) {
+      toastService.error(err.data.message)
     } finally {
       setLoading(false)
     }

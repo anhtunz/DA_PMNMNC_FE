@@ -9,7 +9,7 @@ const loginService = async (email: string, password: string) => {
     const response = await NetworkManager.instance.createDataInServer(APIPathConstants.LOGIN_PATH, data)
     return response
   } catch (error) {
-    console.log(error)
+    throw error
   }
 }
 export default loginService
