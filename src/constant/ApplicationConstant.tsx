@@ -11,7 +11,14 @@ class ApplicationConstants {
     static readonly USERS_MANAGER_PATH = 'users-manager'
     static readonly USERS_MANAGER_PATH_NAME = 'Quản lý người dùng'
     static readonly DASHBOARD_PATH = '/dashboard'
-    static readonly PERSONAL_HISTORY_WORKSHIFT = '/personal-history-workshift'
+    static readonly STAFF_WORKSHIFT_HISTORY_PATH = '/staff-workshift-history'
+    static readonly PERSONAL_WORKSHIFT_HISTORY_PATH = '/personal-workshift-history'
+    static readonly SHIFT_REGISTRATION_PATH = '/shift-registration'
+
+    //Web Path - Auth
+    static readonly FORGOT_PASSWORD_PATH = '/forgot-password'
+    static readonly REGISTER_PATH = '/register'
+
 }
 
 export default ApplicationConstants

@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { optionStaff } from '../../assets/dataset/optionStaff'
 import { formatDateByDMY, formatDateByYMD } from '../../components/helpers/formatNowDate'
 import { useSelectOption } from '../../hooks/useSelectOption'
-import { Link } from 'react-router-dom'
 import Filter from '../../components/common/Filter'
 import useCappedDateRange from '../../hooks/useCappedDateRange'
 const HistoryWorkshiftStaffPage = () => {
@@ -132,19 +131,18 @@ const HistoryWorkshiftStaffPage = () => {
             />
           </div>
         </Filter>
-        <Link to={'/personal-history-workshift'}>Lịch sử cá nhân</Link>
       </div>
       <div className='flex flex-col gap-6 '>
-        {shiftStaff.map((item) => (
-          <div className='flex flex-col gap-4 border bg-gray-50 rounded-xl p-5'>
+        {shiftStaff.map((item, index) => (
+          <div className='flex flex-col gap-4 border bg-gray-50 rounded-xl p-5' key={index}>
             <span className='font-bold text-2xl'>Image {item.staffname} (email)</span>
             <div className='flex flex-col gap-3'>
-              {item.shift.map((infoShift) => (
-                <div className='flex flex-col gap-3'>
+              {item.shift.map((infoShift, index) => (
+                <div className='flex flex-col gap-3' key={index}>
                   <span className='font-bold italic'>Ngày: {infoShift.workDate}</span>
                   <section className='flex flex-col gap-3'>
-                    {infoShift.detail.map((detail) => (
-                      <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md'>
+                    {infoShift.detail.map((detail, index) => (
+                      <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={index}>
                         <div className='flex flex-col gap-2 w-[35%]'>
                           <span className='font-bold text-blue-400'>{detail.shiftname}</span>
                           <span className='text-gray-400'>
