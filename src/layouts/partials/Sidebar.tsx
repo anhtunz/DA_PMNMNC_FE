@@ -7,6 +7,7 @@ import ApplicationConstants from '../../constant/ApplicationConstant'
 import { useAuth } from '../../context/AuthContext'
 
 type MenuItem = Required<MenuProps>['items'][number]
+
 interface InitialProps {
   collapsed?: boolean
   isMd?: boolean

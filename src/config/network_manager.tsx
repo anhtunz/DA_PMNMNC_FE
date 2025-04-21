@@ -113,13 +113,13 @@ class NetworkManager {
    * @param body Contains the data to be updated
    * @returns The HTTP status code of the response
    */
-  async updateDataInServer(path: string, body: Record<string, any>): Promise<number> {
+  async updateDataInServer(path: string, body: Record<string, any>): Promise<any> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] PUT url: ${ApplicationConstants.DOMAIN}/${path}`)
       const response = await this.axiosInstance.put(path, body, {
         validateStatus: (status) => status === 200
       })
-      return response.status
+      return response
     } catch (error: any) {
       throw error.response
     }
@@ -131,13 +131,13 @@ class NetworkManager {
    * @param path The endpoint for the request
    * @returns The HTTP status code of the response
    */
-  async deleteDataInServer(path: string): Promise<number> {
+  async deleteDataInServer(path: string): Promise<any> {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] DELETE url: ${ApplicationConstants.DOMAIN}/${path}`)
       const response = await this.axiosInstance.delete(path, {
         validateStatus: (status) => status === 200
       })
-      return response.status
+      return response
     } catch (error: any) {
       throw error.response
     }

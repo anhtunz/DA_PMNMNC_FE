@@ -11,6 +11,7 @@ const GetAllShiftsPage: React.FC = () => {
   const [data, setData] = useState([])
   const [editingShift, setEditingShift] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModal2Open, setIsModal2Open] = useState(false)
   const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
 
@@ -39,6 +40,34 @@ const GetAllShiftsPage: React.FC = () => {
   useEffect(() => {
     fetchData()
   }, [])
+  
+  const handleCreate = async () => {
+    try {
+      const values = await form.validateFields() 
+      const payload = {
+        ...values,
+        time_start: values.time_start.format('HH:mm:ss'),
+        time_end: values.time_end.format('HH:mm:ss'),
+      } 
+      // Gọi API Create
+      const response = await NetworkManager.instance.createDataInServer('admin/shifts/create',payload)
+      
+      if (!response) {
+        console.error('Response is undefined')
+        return
+      }
+      if (response.status === StatusCodeConstants.OK) /* Nếu response trả về HTTP 200 */ {
+        message.success('Thêm ca làm thành công')
+        setIsModal2Open(false) // Đóng modal
+        fetchData() // Làm mới danh sách
+      } else {
+        message.error('Thêm ca làm thất bại')
+        return
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleEdit = async (record: any) => {
     setEditingShift(record)
@@ -50,7 +79,7 @@ const GetAllShiftsPage: React.FC = () => {
     })
     setIsModalOpen(true)
   } 
-
+  
   const handleUpdate = async() => {
     try {
       const values = await form.validateFields() 
@@ -85,7 +114,6 @@ const GetAllShiftsPage: React.FC = () => {
 
   const handleDelete = (record: any) => {
     let timeoutId: NodeJS.Timeout;
-  
     const modal = Modal.confirm({
       title: 'Xác nhận xóa',
       content: `Bạn có chắc muốn xóa ca làm "${record.name}" không?`,
@@ -118,7 +146,7 @@ const GetAllShiftsPage: React.FC = () => {
       modal.update({
         okButtonProps: { disabled: false }
       });
-    }, 2000); // 2 giây sau mới cho phép nhấn nút Xóa
+    }, 1000); // 1 giây sau mới cho phép nhấn nút Xóa
   }
   
   const columns = [
@@ -158,9 +186,15 @@ const GetAllShiftsPage: React.FC = () => {
     }
   ] 
 
+
   return (
   <>
     <Card title="Thông tin các ca làm" loading={loading}>
+      <div className="flex justify-end mb-4">
+        <Button type="primary" onClick={() => setIsModal2Open(true)}>
+          Thêm mới ca làm
+        </Button>
+      </div>
       <TableComponent columns={columns} dataSource={data} pageSizeCustom={5} />
     </Card>
     
@@ -172,7 +206,107 @@ const GetAllShiftsPage: React.FC = () => {
         cancelText="Hủy"
         okText="Cập nhật"
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} 
+        layout="vertical" 
+        initialValues={{
+            time_start: dayjs().startOf("day"),
+            time_end: dayjs().startOf("day"),
+        }}>
+          <Form.Item 
+          name="name" 
+          label={<span className="font-medium text-gray-700">Tên ca làm</span>}
+          rules={[{ required: true, message: "Vui lòng nhập tên!" },
+                  {
+                    pattern: /^[a-zA-Z0-9\s\u00C0-\u1EF9]*$/,
+                    message: "Không được chứa ký tự đặc biệt!",
+                  },
+                ]}
+          >
+            <Input className="rounded-lg" />
+          </Form.Item>
+          <Form.Item 
+          name="description" 
+          label={<span className="font-medium text-gray-700">Mô tả</span>}
+          rules={[{ required: true, message: "Vui lòng nhập mô tả!" },
+                  {
+                    pattern: /^[a-zA-Z0-9\s\u00C0-\u1EF9]*$/,
+                    message: "Không được chứa ký tự đặc biệt!",
+                  },
+                  { max: 100, message: "Mô tả không được quá 100 ký tự!" }
+                ]}
+          >
+            <TextArea
+              placeholder="Nhập mô tả"
+              maxLength={100}
+              showCount
+              rows={4}
+              className="rounded-lg"
+            />
+          </Form.Item>
+
+          <Form.Item
+            shouldUpdate
+            noStyle
+          >
+          
+          <div className="flex flex-col md:flex-row gap-4">
+            <Form.Item
+                label={<span className="font-medium text-gray-700">Thời gian bắt đầu</span>}
+                name="time_start"
+                dependencies={['time_end']}
+                className="w-full md:w-1/2"
+                rules={[{ required: true, message: "Vui lòng chọn thời gian bắt đầu!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const end = getFieldValue('time_end');
+                      if (!end || !value) return Promise.resolve();
+                      if (end.isAfter(value)) return Promise.resolve();
+                      return Promise.reject('Thời gian bắt đầu phải trước thời gian kết thúc');
+                    }
+                  })
+                ]}
+            >
+                <TimePicker format="HH:mm:ss" className="w-full rounded-lg" />
+            </Form.Item>
+          
+            <Form.Item
+                label={<span className="font-medium text-gray-700">Thời gian kết thúc</span>}
+                name="time_end"
+                dependencies={['time_start']}
+                className="w-full md:w-1/2"
+                rules={[{ required: true, message: "Vui lòng chọn thời gian kết thúc!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const start = getFieldValue('time_start');
+                      if (!start || !value) return Promise.resolve();
+                      if (start.isBefore(value)) return Promise.resolve();
+                      return Promise.reject('Thời gian kết thúc phải sau thời gian bắt đầu');
+                    }
+                  })
+                ]}
+            >
+                <TimePicker format="HH:mm:ss" className="w-full rounded-lg" />
+            </Form.Item>
+            </div>
+            
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Thêm mới ca làm"
+        open={isModal2Open}
+        onCancel={() => setIsModal2Open(false)}
+        onOk={handleCreate}
+        cancelText="Hủy"
+        okText="Cập nhật"
+      >
+        <Form form={form} 
+        layout="vertical" 
+        initialValues={{
+            time_start: dayjs().startOf("day"),
+            time_end: dayjs().startOf("day"),
+        }}>
           <Form.Item 
           name="name" 
           label={<span className="font-medium text-gray-700">Tên ca làm</span>}

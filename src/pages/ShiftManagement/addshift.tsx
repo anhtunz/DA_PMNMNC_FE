@@ -35,8 +35,7 @@ const AddShiftPage: React.FC = () => {
                 time_start: start,
                 time_end: end
             })
-        }
-        
+        }   
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
@@ -140,9 +139,10 @@ const AddShiftPage: React.FC = () => {
                 
                 <Form.Item>
                     <Button
+                            type="primary"
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                             htmlType="submit"
-                            loading={loading}    
+                            loading={loading}   
                     >
                         Gửi
                     </Button>
