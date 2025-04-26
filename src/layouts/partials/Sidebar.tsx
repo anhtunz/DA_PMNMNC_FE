@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, PieChartOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, PieChartOutlined, TableOutlined, HourglassOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -29,7 +29,12 @@ const items: MenuItem[] = [
   {
     key: '/list-of-shifts',
     label: 'Danh sách ca làm',
-    icon: <ClockCircleOutlined />
+    icon: <HourglassOutlined />
+  },
+  {
+    key: 'list-of-rooms',
+    label: 'Danh sách phòng',
+    icon: <TableOutlined />
   },
   {
     key: `/${ApplicationConstants.USERS_MANAGER_PATH}`,

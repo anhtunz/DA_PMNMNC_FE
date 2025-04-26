@@ -18,6 +18,7 @@ import PersonalWorkshift from '../pages/workshift-staff/PersonalWorkshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
 import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
+import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: 'list-of-shifts',
         element: <GetAllShiftsPage />
+      },
+      {
+        path: 'list-of-rooms',
+        element: <GetAllRoomsPage />
       }
     ]
   },
