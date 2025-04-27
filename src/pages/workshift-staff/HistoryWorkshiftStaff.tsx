@@ -1,98 +1,61 @@
 import SelectOption from '../../components/common/SelectOption'
-import { Dayjs } from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
-import { useState } from 'react'
-import { optionStaff } from '../../assets/dataset/optionStaff'
+import { useEffect, useState } from 'react'
 import { formatDateByDMY, formatDateByYMD } from '../../components/helpers/formatNowDate'
 import { useSelectOption } from '../../hooks/useSelectOption'
 import Filter from '../../components/common/Filter'
 import useCappedDateRange from '../../hooks/useCappedDateRange'
+import { getAllUser } from '../../services/userProfile/userManagementService'
+import getAllHistoryWorkshift from '../../services/history-shift/staffShiftHistoryService'
+import { Skeleton } from 'antd'
+import EmptyData from '../../components/common/EmptyData'
+
+interface ShiftDetail {
+  dayRegis: string
+  data: {
+    id: string;
+    name: string;
+    timeStart: string;
+    timeEnd: string;
+  }[];
+}
+
+interface Shift {
+  user_id: string
+  user_name: string
+  avatar: string
+  shifts_by_day: ShiftDetail[]
+}
 const HistoryWorkshiftStaffPage = () => {
-  const shiftStaff = [
-    {
-      id: 0,
-      staffname: 'anh quan',
-      shift: [
-        {
-          workDate: '11/04/2025',
-          detail: [
-            {
-              shiftname: 'ca 1',
-              startTime: '6:00:00',
-              endTime: '8:00:00',
-            },
-            {
-              shiftname: 'ca 2',
-              startTime: '8:00:00',
-              endTime: '10:00:00',
-            }
-          ]
-        },
-        {
-          workDate: '12/04/2025',
-          detail: [
-            {
-              shiftname: 'ca 1',
-              startTime: '6:00:00',
-              endTime: '8:00:00',
-            },
-            {
-              shiftname: 'ca 2',
-              startTime: '8:00:00',
-              endTime: '10:00:00',
 
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 1,
-      staffname: 'tuan',
-      shift: [
-        {
-          workDate: '11/04/2025',
-          detail: [
-            {
-              shiftname: 'ca 1',
-              startTime: '6:00:00',
-              endTime: '8:00:00',
+  const [users, setUsers] = useState<{ id: string; name: string }[]>([])
+  const [userWorkshiftHistory, setUserWorkshiftHistory] = useState<Shift[]>([])
+  const getUsersFromApi = async () => {
+    try {
+      const resposne = await getAllUser();
 
-            },
-            {
-              shiftname: 'ca 2',
-              startTime: '8:00:00',
-              endTime: '10:00:00',
-
-            }
-          ]
-        },
-        {
-          workDate: '12/04/2025',
-          detail: [
-            {
-              shiftname: 'ca 1',
-              startTime: '6:00:00',
-              endTime: '8:00:00',
-            },
-            {
-              shiftname: 'ca 2',
-              startTime: '8:00:00',
-              endTime: '10:00:00',
-            }
-          ]
-        }
-      ]
+      setUsers(resposne.data)
+    } catch (error) {
+      console.log(error)
     }
-  ]
-  const { selected: selectedMulti, handleSelect: handleSelecteMulti } = useSelectOption(true)
+  }
+  useEffect(() => {
+    getUsersFromApi()
+  }, [])
+
+  const optionUsers = users.map(item => ({
+    value: item.id,
+    label: item.name
+  }))
+
+
+  const { selected: selectedUsers, handleSelect: handleSelecteMulti } = useSelectOption(true)
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const { rangeDate, handleDateChange } = useCappedDateRange()
 
-  const handleCallApi = (open: boolean) => {
-    setOpen(!open)
-  }
+
 
   /** Xử lí dữ liệu date 
    * @param {nowFormatYMD} - ngày hiện tại theo định dạng YYYY/MM/DD
@@ -109,14 +72,36 @@ const HistoryWorkshiftStaffPage = () => {
   const onChange = (range: { firstDay: Dayjs | null; lastDay: Dayjs | null }) => {
     handleDateChange(range)
   }
-
+  const handleCallApi = async () => {
+    try {
+      setLoading(true)
+      const startDate = rangeDate.startDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
+      const endDate = rangeDate.endDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
+      const body = {
+        startDate,
+        endDate,
+        userIds: selectedUsers
+      }
+      const response = await getAllHistoryWorkshift(body)
+      setUserWorkshiftHistory(response)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    } finally {
+      setOpen(false)
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    handleCallApi()
+  }, [])
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
         <span className='font-bold'>Ngày hôm nay: {`${nowFormatDMY}`}</span>
-        <Filter open={open} setOpen={setOpen} handleApi={() => handleCallApi} loading={loading}>
+        <Filter open={open} setOpen={setOpen} handleApi={handleCallApi} loading={loading}>
           <SelectOption
-            optionData={optionStaff}
+            optionData={optionUsers}
             isMultiSelect={true}
             placeholder='Chọn nhân viên'
             customWidth='100%'
@@ -132,31 +117,38 @@ const HistoryWorkshiftStaffPage = () => {
           </div>
         </Filter>
       </div>
-      <div className='flex flex-col gap-6 '>
-        {shiftStaff.map((item, index) => (
-          <div className='flex flex-col gap-4 border bg-gray-50 rounded-xl p-5' key={index}>
-            <span className='font-bold text-2xl'>Image {item.staffname} (email)</span>
-            <div className='flex flex-col gap-3'>
-              {item.shift.map((infoShift, index) => (
-                <div className='flex flex-col gap-3' key={index}>
-                  <span className='font-bold italic'>Ngày: {infoShift.workDate}</span>
-                  <section className='flex flex-col gap-3'>
-                    {infoShift.detail.map((detail, index) => (
-                      <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={index}>
-                        <div className='flex flex-col gap-2 w-[35%]'>
-                          <span className='font-bold text-blue-400'>{detail.shiftname}</span>
-                          <span className='text-gray-400'>
-                            Thời gian: {detail.startTime} - {detail.endTime}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </section>
+      <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
+        <div className='flex flex-col gap-6 '>
+          {loading ? <Skeleton active /> : userWorkshiftHistory.length === 0 ? (
+            <EmptyData styleCss='h-[350px]' />
+          ) : (
+            userWorkshiftHistory.map((shift, key) => (
+              <>
+                <div className='flex flex-row items-center gap-4'>
+                  <img className='rounded-full size-8 object-cover' src={shift.avatar} alt="Ảnh đại diện" />
+                  <span className='font-bold'>{shift.user_name}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+                <div className='flex flex-col gap-4 border bg-gray-25 rounded-xl p-5' key={key}>
+                  <div className='flex flex-col gap-3'>
+                    {shift.shifts_by_day.length > 0 ? shift.shifts_by_day.map((detail, key) => (
+                      <div className='flex flex-col p-3 gap-5 items-start h-fit bg-gray-100 rounded-md' key={key}>
+                        <span className='font-bold italic'>Ngày {dayjs(detail.dayRegis).format('DD-MM-YYYY')}</span>
+                        {detail.data.map((item, key) => (
+                          <div className='flex flex-col gap-2 w-full p-3 hover:bg-gray-300 rounded-xl' key={key}>
+                            <span className='font-bold text-blue-400'>{item.name}</span>
+                            <span className='text-gray-500'>
+                              Thời gian: {item.timeStart} - {item.timeEnd}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )) : <div>Không tìm thấy lịch sử</div>}
+                  </div>
+                </div>
+              </>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import { formatDateByDMY } from '../../components/helpers/formatNowDate'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import Filter from '../../components/common/Filter'
-import getUserShiftHistory from '../../services/userShift/userShiftHistoryService'
 import useUserStore from '../../stores/userStore'
 import useCappedDateRange from '../../hooks/useCappedDateRange'
 import { Skeleton } from 'antd'
 import EmptyData from '../../components/common/EmptyData'
+import getPersonalShiftHistory from '../../services/history-shift/personalShiftHistoryService'
 interface ShiftDetail {
   name: string;
   timeStart: string;
@@ -47,7 +47,7 @@ const PersonalWorkshift = () => {
       setOpen(false)
       const startDate = rangeDate.startDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
       const endDate = rangeDate.endDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
-      const response = await getUserShiftHistory(startDate, endDate)
+      const response = await getPersonalShiftHistory(startDate, endDate)
       const data = Array.isArray(response.data.data) ? response.data.data : [];
       setHistoryShiftPersonalUser(data)
     } catch (error) {

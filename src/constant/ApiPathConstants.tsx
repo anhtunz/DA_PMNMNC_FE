@@ -12,6 +12,7 @@ class APIPathConstants {
 
   //quản lý ca làm
   static readonly GET_USER_SHIFT_HISTORY = 'user-shift-history/get-all'
+  static readonly GET_ALL_STAFF_SHIFT_HISTORY = 'user-shift-management/get-all'
 
   // Quan ly users (ADMIN or SUPERADMIN)
   static readonly ADMIN_BLOCK_OR_UNBLOCK_USER = 'admin/users/block'

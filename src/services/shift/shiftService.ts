@@ -53,8 +53,8 @@ export class ShiftService {
       };
     }
   }
-   // Lấy trạng thái đăng ký ca làm của user theo tuần hoặc dải ngày
-   static async getAllUserRegisteredShifts(startDate: string, endDate: string): Promise<ApiResponse<Array<{ status: any, date: string, shift_id: string, isRegistered: boolean }>>> {
+  // Lấy trạng thái đăng ký ca làm của user theo tuần hoặc dải ngày
+  static async getAllUserRegisteredShifts(startDate: string, endDate: string): Promise<ApiResponse<Array<{ status: any, date: string, shift_id: string, isRegistered: boolean }>>> {
     try {
       const body = { startDate, endDate };
       console.log('getAllUserRegisteredShifts - Request Body:', body);
@@ -107,7 +107,7 @@ export class ShiftService {
   }
 
   // Kiểm tra xem ca làm việc có đủ điều kiện đăng ký không (trước ít nhất 1 giờ)
-  static async checkShiftRegistrationEligibility(shiftId: string, dateRegister: string): Promise<{isEligible: boolean, message?: string}> {
+  static async checkShiftRegistrationEligibility(shiftId: string, dateRegister: string): Promise<{ isEligible: boolean, message?: string }> {
     try {
       // Lấy thông tin ca làm việc
       const shift = await this.getShiftById(shiftId);
@@ -195,7 +195,7 @@ export class ShiftService {
       };
       console.log('registerShift - Request Body:', body);
       console.log('registerShift - API Path:', 'user-register-shift/subscribe-or-unsubscribe-shift');
-      console.log('Gửi giữ liệu đăng ký lên api:', JSON.stringify(body,null,2));
+      console.log('Gửi giữ liệu đăng ký lên api:', JSON.stringify(body, null, 2));
 
       // Thực hiện gọi API với time-out
       const apiPromise = NetworkManager.instance.createDataInServer(
