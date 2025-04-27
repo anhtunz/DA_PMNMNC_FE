@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Dayjs } from 'dayjs'
 import { Button, Popover, Tag, message, Modal, Spin } from 'antd'
-import { FilterOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { FilterOutlined } from '@ant-design/icons'
 import SelectOption from '../../components/common/SelectOption'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import { formatDateByYMD, formatDateByDMY } from '../../components/helpers/formatNowDate'
@@ -264,6 +264,23 @@ const WorkshiftStaffPage = () => {
             status: item.status === 0 ? 'Chưa duyệt' : (item.status === 1 ? 'Đã duyệt' : 'Đã từ chối')
           }
         });
+        formattedData.sort((a: UserShift, b: UserShift) => {
+          // Chuyển 'DD/MM/YYYY' về đúng Date để so sánh
+          const dateA: Date = a.work_day ? new Date(a.work_day.split('/').reverse().join('/')) : new Date('1970/01/01')
+          const dateB: Date = b.work_day ? new Date(b.work_day.split('/').reverse().join('/')) : new Date('1970/01/01')
+          //return dateA.getTime() - dateB.getTime()
+          if (dateA.getTime() !== dateB.getTime()) {
+            return dateA.getTime() - dateB.getTime();
+          } else {
+            // Nếu cùng ngày, sắp xếp tiếp theo time_start
+            const timeA = a.time_start || '00:00';
+            const timeB = b.time_start || '00:00';
+            const [hourA, minuteA] = timeA.split(':').map(Number);
+            const [hourB, minuteB] = timeB.split(':').map(Number);
+        
+            return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+          }
+        })
         setUserShifts(formattedData)
       } else {
         console.error('Invalid response format:', response)
@@ -426,48 +443,59 @@ const WorkshiftStaffPage = () => {
     },
   ]
 
-  // Hiển thị nút hành động
   const renderActions = (record: UserShift) => {
     if (record.status === 'Chưa duyệt') {
       return (
         <div className="flex space-x-2">
           <Button
-            type="primary"
             size="small"
-            icon={<CheckCircleOutlined />}
             onClick={() => showConfirmModal(record.id, 'accept')}
-            className="bg-blue-500"
+            className="bg-green-700 hover:bg-green-800 text-white flex items-center justify-center rounded"
+            title="Duyệt"
+            style={{ padding: '0 8px' }}
           >
-            Duyệt
+            ✔
           </Button>
+
           <Button
-            danger
             size="small"
-            icon={<CloseCircleOutlined />}
             onClick={() => showConfirmModal(record.id, 'deny')}
-            className="bg-red-50 text-red-500 border-red-500"
+            className="bg-red-700 hover:bg-red-800 text-white flex items-center justify-center rounded"
+            title="Từ chối"
+            style={{ padding: '0 8px' }}
           >
-            Từ chối
+            ✖
           </Button>
         </div>
+
+
       )
     }
     return null
   }
 
   // Fetch data when component mounts
-  useEffect(() => {
-    fetchUsers()
-    fetchShifts()
-  }, [])
+  // useEffect(() => {
+  //   fetchUsers()
+  //   fetchShifts()
+  // }, [])
 
-  // Fetch user shifts when users and shifts data is loaded
+  // // Fetch user shifts when users and shifts data is loaded
+  // useEffect(() => {
+  //   if (users.length > 0 && shifts.length > 0) {
+  //     fetchUserShifts()
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [users, shifts])
+  // useEffect(() => {
+  //   fetchUsers()
+  //   fetchShifts()
+  // }, [])
   useEffect(() => {
-    if (users.length > 0 && shifts.length > 0) {
-      fetchUserShifts()
-    }
-  }, [users, shifts])
-
+    fetchUsers();
+    fetchShifts();
+    fetchUserShifts();
+  }, []);
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       {contextHolder}
@@ -483,6 +511,7 @@ const WorkshiftStaffPage = () => {
                   placeholder='Chọn nhân viên'
                   customWidth='100%'
                   onChange={handleSelecteMulti}
+                  value={selectedMulti}
                 />
                 <div className='flex gap-4'>
                   <SelectOption

@@ -1,17 +1,12 @@
 import { NetworkManager } from '../../config/network_manager';
-// import ApplicationConstants from '../../constant/ApplicationConstant';
+import APIPathConstants from '../../constant/ApiPathConstants';
+
 // Định nghĩa các kiểu dữ liệu
 export interface Shift {
   id: string;
   name: string;
-  description: string;
-  time_start: string;
-  time_end: string;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-  status: number;
+  timeStart: string;
+  timeEnd: string;
 }
 
 export interface ApiResponse<T> {
@@ -23,29 +18,62 @@ export interface ApiResponse<T> {
 export class ShiftService {
   // Cache cho thông tin ca làm việc
   private static shiftCache: Record<string, Shift> = {};
-  
-  // Lấy tất cả ca làm việc
+
+  // Lấy tất cả ca làm việc từ API user-register-shift/get-all-shift
   static async getAllShifts(): Promise<ApiResponse<Shift[]>> {
     try {
-      const response = await NetworkManager.instance.getDataFromServer('admin/shifts');
-      
-      // Cập nhật cache với thông tin ca làm việc
-      if (response.data && Array.isArray(response.data.data)) {
-        response.data.data.forEach((shift: Shift) => {
-          this.shiftCache[shift.id] = shift;
-        });
-      }
-      
+      // POST, body rỗng
+      const response = await NetworkManager.instance.createDataInServer(
+        'user-register-shift/get-all-shift',
+        {}
+      );
+      // response.data là object kiểu {message, data}
+      const data = response.data;
+      const shifts: Shift[] = (data.data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        timeStart: item.timeStart,
+        timeEnd: item.timeEnd,
+      }));
+      // Lưu cache nếu cần
+      shifts.forEach(shift => {
+        this.shiftCache[shift.id] = shift;
+      });
       return {
-        ...response.data,
-        success: true
+        message: data.message,
+        data: shifts,
+        success: true,
       };
     } catch (error) {
       console.error('Error fetching shifts:', error);
       return {
         message: 'Không thể tải danh sách ca làm việc',
         data: [],
-        success: false
+        success: false,
+      };
+    }
+  }
+   // Lấy trạng thái đăng ký ca làm của user theo tuần hoặc dải ngày
+   static async getAllUserRegisteredShifts(startDate: string, endDate: string): Promise<ApiResponse<Array<{ status: any, date: string, shift_id: string, isRegistered: boolean }>>> {
+    try {
+      const body = { startDate, endDate };
+      console.log('getAllUserRegisteredShifts - Request Body:', body);
+      console.log('getAllUserRegisteredShifts - API Path:', 'user-register-shift/get-all-user-shift');
+      const response = await NetworkManager.instance.createDataInServer(
+        APIPathConstants.GET_ALL_USER_REGISTERED_SHIFTS,
+        body
+      );
+      return {
+        message: response.data.message,
+        data: response.data.data,
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error fetching user registered shifts:', error);
+      return {
+        message: 'Không thể tải trạng thái đăng ký ca làm',
+        data: [],
+        success: false,
       };
     }
   }
@@ -59,7 +87,7 @@ export class ShiftService {
         console.log('Lấy thông tin ca làm việc từ cache:', shiftId);
         return this.shiftCache[shiftId];
       }
-      
+
       // Nếu không có trong cache, lấy từ danh sách ca
       // Thay vì gọi API riêng biệt, lấy tất cả ca làm việc
       const allShiftsResponse = await this.getAllShifts();
@@ -70,7 +98,7 @@ export class ShiftService {
           return shift;
         }
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching shift details:', error);
@@ -83,43 +111,43 @@ export class ShiftService {
     try {
       // Lấy thông tin ca làm việc
       const shift = await this.getShiftById(shiftId);
-      
+
       if (!shift) {
         return { isEligible: false, message: 'Không tìm thấy thông tin ca làm việc' };
       }
-      
-      // Nếu không có time_start, không thể kiểm tra
-      if (!shift.time_start) {
+
+      // Nếu không có timeStart, không thể kiểm tra
+      if (!shift.timeStart) {
         console.warn('Ca làm việc không có thông tin thời gian bắt đầu:', shift);
         return { isEligible: true }; // Mặc định cho phép đăng ký
       }
-      
-      // Tách thời gian bắt đầu ca làm việc từ shift.time_start (định dạng: HH:MM:SS)
-      const timeParts = shift.time_start.split(':');
+
+      // Tách thời gian bắt đầu ca làm việc từ shift.timeStart (định dạng: HH:MM:SS)
+      const timeParts = shift.timeStart.split(':');
       const hours = parseInt(timeParts[0], 10);
       const minutes = parseInt(timeParts[1], 10);
-      
+
       // Tạo đối tượng Date cho thời điểm bắt đầu ca làm việc
       const shiftDate = new Date(dateRegister);
       shiftDate.setHours(hours, minutes, 0, 0);
-      
+
       // Thời điểm hiện tại
       const now = new Date();
-      
+
       // Tính khoảng cách thời gian (milliseconds)
       const timeDiff = shiftDate.getTime() - now.getTime();
       const hourDiff = timeDiff / (1000 * 60 * 60);
-      
+
       console.log(`Kiểm tra điều kiện đăng ký ca: ID=${shiftId}, Thời gian bắt đầu=${shiftDate.toLocaleString()}, Khoảng cách=${hourDiff.toFixed(2)} giờ`);
-      
+
       // Kiểm tra xem khoảng cách có lớn hơn 1 giờ không
       if (hourDiff < 1) {
-        return { 
-          isEligible: false, 
-          message: 'Phải đăng ký ca sớm ít nhất 1 giờ' 
+        return {
+          isEligible: false,
+          message: 'Phải đăng ký ca sớm ít nhất 1 giờ'
         };
       }
-      
+
       return { isEligible: true };
     } catch (error) {
       console.error('Error checking shift eligibility:', error);
@@ -143,15 +171,15 @@ export class ShiftService {
           reject(new Error('API request timed out'));
         }, 10000); // 10 giây time-out
       });
-      
+
       // Thực hiện kiểm tra điều kiện
       const eligibilityCheckPromise = this.checkShiftRegistrationEligibility(shiftId, dateRegister);
       const eligibilityCheck = await Promise.race([eligibilityCheckPromise, timeoutPromise]);
-      
+
       if (!('isEligible' in eligibilityCheck)) {
         throw new Error('Invalid response format from eligibility check');
       }
-      
+
       if (!eligibilityCheck.isEligible) {
         // Trả về lỗi với cùng định dạng như API trả về
         return {
@@ -160,22 +188,24 @@ export class ShiftService {
           success: false
         };
       }
-      
+
       const body = {
         shiftId,
         dateRegister
       };
+      console.log('registerShift - Request Body:', body);
+      console.log('registerShift - API Path:', 'user-register-shift/subscribe-or-unsubscribe-shift');
       console.log('Gửi giữ liệu đăng ký lên api:', JSON.stringify(body,null,2));
-      
+
       // Thực hiện gọi API với time-out
       const apiPromise = NetworkManager.instance.createDataInServer(
         'user-register-shift/subscribe-or-unsubscribe-shift',
         body
       );
-      
+
       const response = await Promise.race([apiPromise, timeoutPromise]);
       console.log('Phản hồi từ api:', response.data);
-      
+
       return {
         ...response.data,
         success: true
@@ -183,12 +213,12 @@ export class ShiftService {
     } catch (error) {
       console.error('Error registering shift:', error);
       let errorMessage = 'Lỗi khi đăng ký ca làm việc';
-      
+
       // Kiểm tra xem lỗi có phải từ time-out hay không
       if (error instanceof Error && error.message === 'API request timed out') {
         errorMessage = 'Yêu cầu đăng ký ca tốn quá nhiều thời gian, vui lòng thử lại sau';
       }
-      
+
       return {
         message: errorMessage,
         data: null,

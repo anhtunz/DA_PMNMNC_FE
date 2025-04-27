@@ -24,6 +24,7 @@ class APIPathConstants {
   static readonly ADMIN_GET_ALL_SHiFTS = 'admin/shifts'
   static readonly GET_USER_SHIFTS = 'user-register-shift/get-all-shift'
   static readonly USER_REGISTER_SHIFT = 'user-register-shift/subscribe-or-unsubscribe-shift'
+  static readonly GET_ALL_USER_REGISTERED_SHIFTS = 'user-register-shift/get-all-user-shift'
 
   // Quản lý ca làm việc
   static readonly GET_ALL_USER_SHIFTS = 'consider-user-shift/get-all'
