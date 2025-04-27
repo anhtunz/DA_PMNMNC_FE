@@ -1,5 +1,5 @@
 // routes/AppRouter.tsx
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import NotFound from '../pages/NotFound'
@@ -44,6 +44,7 @@ const router = createBrowserRouter([
 
     // ROUTES DÙNG CHUNG CHO MỌI ROLE SAU KHI LOGIN
     children: [
+      { index: true, element: <Navigate to='dashboard' /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'personal-workshift-history', element: <PersonalWorkshift /> },
       { path: 'profile', element: <ProfilePage /> },
