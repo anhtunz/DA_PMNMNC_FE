@@ -19,6 +19,7 @@ import AddShiftPage from '../pages/ShiftManagement/addshift'
 import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
+import CategoryManager from '../pages/Category/CategoryManager'
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -59,7 +60,8 @@ const router = createBrowserRouter([
           { path: 'staff-workshift-history', element: <HistoryWorkshiftStaffPage /> },
           { path: 'users-manager', element: <UsersManager /> },
           { path: 'add-shift', element: <AddShiftPage /> },
-          { path: 'list-of-shifts', element: <GetAllShiftsPage /> }
+          { path: 'list-of-shifts', element: <GetAllShiftsPage /> },
+          { path: 'category-manager', element: <CategoryManager /> }
         ]
       },
     ]

@@ -84,6 +84,12 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         ]
       },
       {
+        key: '/category-manager',
+        label: 'Danh mục sản phẩm',
+        icon: <ClockCircleOutlined />
+      },
+      
+      {
         key: ApplicationConstants.USERS_MANAGER_PATH,
         label: ApplicationConstants.USERS_MANAGER_PATH_NAME,
         icon: <UserOutlined />
