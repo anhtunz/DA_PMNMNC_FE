@@ -32,11 +32,9 @@ class APIPathConstants {
   static readonly ACCEPT_USER_SHIFT = 'consider-user-shift/accept-user-shift'
   static readonly DENY_USER_SHIFT = 'consider-user-shift/deny-user-shift'
 
-   // Quản lý danh mục
-   static readonly CATEGORY_LIST = 'category'
-   static readonly ADMIN_CREATE_CATEGORY = 'admin/category/create'
-   static readonly ADMIN_UPDATE_CATEGORY = 'admin/category'
-   static readonly ADMIN_DELETE_CATEGORY = 'admin/category'
+   // Quản lý dịch vụ (service)
+   static readonly SERVICE_LIST = 'service/get-all-service';
+   static readonly SERVICE_CREATE_OR_UPDATE = 'service/create-or-update-service';
 }
 
 export default APIPathConstants

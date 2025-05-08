@@ -84,8 +84,8 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         ]
       },
       {
-        key: '/category-manager',
-        label: 'Danh mục sản phẩm',
+        key: '/service-manager',
+        label: 'Quản lý dịch vụ',
         icon: <ClockCircleOutlined />
       },
       
