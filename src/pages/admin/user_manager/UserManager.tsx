@@ -496,7 +496,7 @@ const UsersManager = () => {
               <div className='flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl'>
                 <UserOutlined style={{ fontSize: 20 }} />
               </div>
-              <div className='mt-5'>
+              <div className='mt-5 md:w-max'>
                 <span className='text-sm text-gray-500 dark:text-gray-400'>Tổng số người dùng</span>
               </div>
             </div>
@@ -514,7 +514,7 @@ const UsersManager = () => {
                   <span className='relative inline-flex size-3 rounded-full bg-green-400'></span>
                 </span>
               </div>
-              <div className='mt-5'>
+              <div className='mt-5 md:w-max'>
                 <span className='text-sm text-gray-500 dark:text-gray-400'>Đang hoạt động</span>
               </div>
             </div>

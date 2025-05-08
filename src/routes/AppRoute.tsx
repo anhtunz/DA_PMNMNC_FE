@@ -20,6 +20,8 @@ import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
 import CategoryManager from '../pages/Category/CategoryManager'
+// import AddShiftPage from '../pages/ShiftManagement/addshift'
+import CreateInvoice from '../pages/invoice/CreateInvoice'
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -50,6 +52,7 @@ const router = createBrowserRouter([
       { path: 'personal-workshift-history', element: <PersonalWorkshift /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'shift-registration', element: <ShiftRegistration /> },
+      { path: 'create-invoice', element: <CreateInvoice /> },
 
       // ADMIN ROUTES
       {
@@ -63,7 +66,7 @@ const router = createBrowserRouter([
           { path: 'list-of-shifts', element: <GetAllShiftsPage /> },
           { path: 'category-manager', element: <CategoryManager /> }
         ]
-      },
+      }
     ]
   },
   {

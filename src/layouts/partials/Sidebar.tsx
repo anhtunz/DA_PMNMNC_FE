@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, FileAddOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useEffect, useState } from 'react'
@@ -25,9 +25,9 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
 
   const location = useLocation()
   const navigate = useNavigate()
-  const matchKey = items
-    .flatMap((item: any) => item?.children || [item])
-    .find((i: any) => location.pathname.startsWith(i.key))?.key || '';
+  const matchKey =
+    items.flatMap((item: any) => item?.children || [item]).find((i: any) => location.pathname.startsWith(i.key))?.key ||
+    ''
 
   const [selectedKey, setSelectedKey] = useState(matchKey)
 
@@ -48,8 +48,13 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
   const roles = user?.roles || []
   const isAdmin = ['ADMIN', 'SUPERADMIN'].some((role) => roles.includes(role))
   const isEmployee = roles.includes('EMPLOYEE')
-  if (isEmployee && !isAdmin) {
+  if (isEmployee && isAdmin) {
     items.push(
+      {
+        key: ApplicationConstants.CREATE_INVOICE_PATH,
+        label: 'Thêm mới hóa đơn',
+        icon: <FileAddOutlined />
+      },
       {
         key: ApplicationConstants.PERSONAL_WORKSHIFT_HISTORY_PATH,
         label: 'Lịch sử đi làm',
@@ -70,7 +75,7 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         icon: <ClockCircleOutlined />,
         children: [
           { key: ApplicationConstants.STAFF_WORKSHIFT_HISTORY_PATH, label: 'Nhân viên' },
-          { key: ApplicationConstants.PERSONAL_WORKSHIFT_HISTORY_PATH, label: 'Cá nhân' },
+          { key: ApplicationConstants.PERSONAL_WORKSHIFT_HISTORY_PATH, label: 'Cá nhân' }
         ]
       },
       {
@@ -80,7 +85,7 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         children: [
           { key: '/add-shift', label: 'Thêm ca làm mới' },
           { key: '/list-of-shifts', label: 'Danh sách ca làm' },
-          { key: '/workshift-staff', label: 'Duyệt ca làm' },
+          { key: '/workshift-staff', label: 'Duyệt ca làm' }
         ]
       },
       {
@@ -116,7 +121,14 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
     </div>
   ) : (
     <Drawer title='Basic Drawer' placement='left' closable={false} onClose={onClose} open={isOpenSidebar}>
-      <Menu theme='light' mode='inline' defaultSelectedKeys={[selectedKey]} selectedKeys={[location.pathname]} items={items} onClick={onClick} />
+      <Menu
+        theme='light'
+        mode='inline'
+        defaultSelectedKeys={[selectedKey]}
+        selectedKeys={[location.pathname]}
+        items={items}
+        onClick={onClick}
+      />
     </Drawer>
   )
 }
