@@ -1,39 +1,38 @@
-import { Button, Card, Form, Input, Modal, Select, Space } from "antd"
+import { Button, Card, Form, Input, InputNumber, Modal, Select, Space, Tag } from "antd"
 import React, { useEffect, useState } from "react"
 import { NetworkManager } from "../../config/network_manager"
-import TableComponent from "../../components/common/TableComponent"
 import { toastService } from "../../services/toast/ToastService"
+import TableComponent from "../../components/common/TableComponent";
+// import TableComponent from '../../components/common/TableComponent';
+// import axios from "axios"
+
+// const url = "http://127.0.0.1:8000/api/room-management/get-all"
+
+interface Room {
+    id?: string;
+    name: string;
+    description: string;
+    type: string;
+    price: number;
+    isActive: boolean;
+}
 
 const GetAllRoomsPage: React.FC = () => {
-    const [data, setData] = useState([])
-    const [editingRoom, setEditingRoom] = useState(null)
+    const [data, setData] = useState<Room[]>([])
+    const [nameSearch, setNameSearch] = useState('')
+    const [editingRoom, setEditingRoom] = useState<Room | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [form] = Form.useForm()
-    const [roomTypeOptions, setRoomTypeOptions] = useState<{ value: string; label: string }[]>([])
 
-    const fetchOptions = async () => {
-        try {
-            const response = await NetworkManager.instance.getDataFromServer('admin/rooms')
-            if (response) {
-                const uniqueTypes = [...new Set((response.data as { type: string }[]).map((room) => room.type))]
-                setRoomTypeOptions(uniqueTypes.map((type: string) => ({
-                    value: type,
-                    label: type.charAt(0).toUpperCase() + type.slice(1),
-                })))
-            }
-        } catch (error: any) {
-            toastService.error(error.response?.data?.message || 'Có lỗi xảy ra')
-        }
-    };
-
-    const fetchData = async () => {
+    const fetchData = async (search = '') => {
+        setIsModalOpen(false)
         setLoading(true)
         try {
-            const response = await NetworkManager.instance.getDataFromServer('admin/rooms')
+            const response = await NetworkManager.instance.createDataInServer('/room-management/get-all', {nameSearch: search})
             if (response) setData(response.data.data)
         } catch (error: any) {
-            toastService.error(error.response?.data?.message || 'Có lỗi xảy ra')
+            toastService.error(error.data?.message || 'Có lỗi xảy ra')
         } finally {
             setLoading(false)
         }
@@ -41,12 +40,18 @@ const GetAllRoomsPage: React.FC = () => {
 
     useEffect(() => {
         fetchData()
-        fetchOptions()
     }, []);
+
+    const handleSearch = () => {
+        fetchData(nameSearch.trim())
+    }
 
     const handleCreate = () => {
         setEditingRoom(null)
         form.resetFields()
+        form.setFieldsValue({
+            isActive: false
+        })
         setIsModalOpen(true)
     };
 
@@ -59,47 +64,54 @@ const GetAllRoomsPage: React.FC = () => {
     const handleSubmit = async () => {
         try {
             const values = await form.validateFields()
-            const body = { ...values }
-            if (editingRoom) {
-                await NetworkManager.instance.updateDataInServer(`admin/rooms/${(editingRoom as any).id}`, body)
-                toastService.success('Cập nhật phòng thành công')
-            } else {
-                await NetworkManager.instance.createDataInServer('admin/rooms/create', body)
-                toastService.success('Tạo phòng thành công')
+            const body = {
+                ...values,
+                id: editingRoom ? editingRoom?.id : null,
+            };
+            const response = await NetworkManager.instance.createDataInServer('/room-management/create-or-update-room', body)
+            if (!response) {
+                console.error('Response is undefined')
+                return
             }
-            fetchData()
+
+            console.log(response);
+            
+            toastService.success(editingRoom ? 'Cập nhật phòng thành công' : 'Tạo phòng thành công')
             setIsModalOpen(false)
+            fetchData()
         } catch (error: any) {
-            toastService.error(error.response?.data?.message || 'Có lỗi xảy ra')
+            toastService.error(error.data?.message || 'Có lỗi xảy ra')
+            console.error(error)
         }
     };
 
-    const handleDelete = async (record: any) => {
-        const modal = Modal.confirm({
-            title: 'Xóa phòng',
-            content: `Bạn có chắc chắn muốn xóa phòng '${record.name}' không?`,
-            okText: 'Xóa',
-            cancelText: 'Hủy',
-            okButtonProps: { disabled: true },
-            onCancel: () => modal.destroy(),
-            onOk: async () => {
-                try {
-                    await NetworkManager.instance.deleteDataInServer(`admin/rooms/${record.id}`)
-                    toastService.success('Xóa phòng thành công')
-                    fetchData()
-                } catch (error: any) {
-                    toastService.error(error.response?.data?.message || 'Có lỗi xảy ra')
-                }
-            },
-        })
-        setTimeout(() => modal.update({ okButtonProps: { disabled: false } }), 1000)
-    };
+    // const handleDelete = async (record: any) => {
+    //     const modal = Modal.confirm({
+    //         title: 'Xóa phòng',
+    //         content: `Bạn có chắc chắn muốn xóa phòng '${record.name}' không?`,
+    //         okText: 'Xóa',
+    //         cancelText: 'Hủy',
+    //         okButtonProps: { disabled: true },
+    //         onCancel: () => modal.destroy(),
+    //         onOk: async () => {
+    //             try {
+    //                 await NetworkManager.instance.deleteDataInServer(`admin/rooms/${record.id}`)
+    //                 toastService.success('Xóa phòng thành công')
+    //                 fetchData()
+    //             } catch (error: any) {
+    //                 toastService.error(error.data?.message || 'Có lỗi xảy ra')
+    //             }
+    //         },
+    //     })
+    //     setTimeout(() => modal.update({ okButtonProps: { disabled: false } }), 1000)
+    // };
 
     const columns = [
         {
             title: 'Tên phòng',
             dataIndex: 'name',
             key: 'name',
+            defaultSortOrder: 'ascend' as const,
             sorter: (a: any, b: any) => a.name.localeCompare(b.name),
         },
         {
@@ -112,22 +124,50 @@ const GetAllRoomsPage: React.FC = () => {
             title: 'Loại phòng',
             dataIndex: 'type',
             key: 'type',
-            sorter: (a: any, b: any) => a.type.localeCompare(b.type),
+            render : (text: any) => (
+                <span style={{ color: text === '0' ? 'blue' : 'orange' }}>
+                    {text === '0' ? 'Phòng đơn' : 'Phòng đôi'}
+                </span>
+            ),
+            filters: [
+                { text: 'Phòng đơn', value: '0' },
+                { text: 'Phòng đôi', value: '1' },
+            ],
+            onFilter: (value: any, record: any) => record.type.toString() === value,
         },
         {
-            title: 'Giá thuê',
+            title: 'Giá phòng (VND)',
             dataIndex: 'price',
             key: 'price',
             sorter: (a: any, b: any) => a.price - b.price,
             render: (text: any) => <span>{text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>,
         },
         {
+            title: 'Trạng thái',
+            dataIndex: 'isActive',
+            key: 'isActive',
+            render: (isActive: boolean) => (
+                <Tag 
+                    color={isActive ? 'darkred' : 'lightgreen'}
+                    style={{ color: isActive ? 'white' : 'brown', fontWeight: 'bold' }}
+                    className="rounded-lg"
+                >
+                  {isActive ? 'Đã đặt' : 'Có sẵn'}
+                </Tag>
+            ),
+            filters: [
+                { text: 'Có sẵn', value: 'false' },
+                { text: 'Đã đặt', value: 'true' },
+            ],
+            onFilter: (value: any, record: any) => record.isActive.toString() === value,
+        },
+        {
             title: "Hành động",
             key: "action",
             render: (_: any, record: any) => (
-                <Space>
+                <Space size="large">
                     <Button type="link" onClick={() => handleEdit(record)}>Sửa</Button>
-                    <Button type="link" danger onClick={() => handleDelete(record)}>Xóa</Button>
+                    {/* <Button type="link" danger onClick={() => handleDelete(record)}>Xóa</Button> */}
                 </Space>
             ),
         },
@@ -135,10 +175,31 @@ const GetAllRoomsPage: React.FC = () => {
 
     return (
         <>
-            <Card title="Thông tin phòng" loading={loading}>
-                <div className="flex justify-end mb-4">
+            <Card title="Thông tin phòng" loading={loading} extra={
+                <div className="flex justify-end mb-4 mt-4">
                     <Button type="primary" onClick={handleCreate}>Thêm phòng</Button>
                 </div>
+            }>
+                <div>
+                <Space.Compact style={{ width: '50%', alignItems: 'center', marginBottom: '20px' }}>
+                    <Input 
+                        placeholder="Nhập tên phòng để tìm kiếm"
+                        value={nameSearch}
+                        onChange={(e) => setNameSearch(e.target.value)}
+                        onPressEnter={handleSearch}
+                        allowClear
+                    />
+                    <Button type="primary" onClick={handleSearch}>Tìm</Button>
+                    <Button onClick={() => { setNameSearch(''); fetchData(); }} className="rounded-lg">Đặt lại</Button>
+                </Space.Compact>
+                </div>
+                {/* <Table
+                    columns={columns}
+                    dataSource={data}
+                    rowKey="id"
+                    scroll={{ x: 800 }}
+                    loading={loading}
+                /> */}
                 <TableComponent columns={columns} dataSource={data} pageSizeCustom={5} />
             </Card>
 
@@ -179,26 +240,53 @@ const GetAllRoomsPage: React.FC = () => {
                         label="Loại phòng"
                         rules={[{ required: true, message: 'Vui lòng chọn loại phòng!' }]}
                     >
-                        <Select placeholder="Select room type" style={{ width: 200 }} allowClear>
-                            {roomTypeOptions.map((option, index) => (
-                                <Select.Option key={index} value={option.value}>
-                                    {option.label}
-                                </Select.Option>
-                            ))}
+                        <Select placeholder="Chọn loại phòng" className="rounded-lg">
+                            <Select.Option value={"0"}>Phòng đơn</Select.Option>
+                            <Select.Option value={"1"}>Phòng đôi</Select.Option>
                         </Select>
                     </Form.Item>
 
                     <Form.Item
                         name="price"
-                        label="Giá thuê"
-                        rules={[
-                            { required: true, message: 'Vui lòng nhập giá thuê!' },
-                            { type: 'number', min: 0, message: 'Giá thuê phải lớn hơn hoặc bằng 0!' },
-                            { pattern: /^[0-9]*$/, message: "Giá thuê không được chứa ký tự đặc biệt!" },
-                        ]}
+                        label="Giá phòng (VND)"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá phòng' }]}
                     >
-                        <Input placeholder="Nhập giá thuê" type="number" min={0} step={10000} />
+                        <InputNumber
+                            style={{ width: '100%' }}
+                            formatter={(value: any)  => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={(value: any) => value!.replace(/\$\s?|(,*)/g, '')}
+                            min={0}
+                        />
                     </Form.Item>
+
+                    {/* {!editingRoom && ( */}
+                    <Form.Item
+                        name="isActive"
+                        label="Trạng thái"
+                        valuePropName="checked"
+                    >
+                        <Select className="rounded-lg" placeholder="Chọn trạng thái" >
+                            <Select.Option value={true}>
+                                <Tag
+                                    color='darkred'
+                                    style={{ color: 'white', fontWeight: 'bold' }}
+                                    className="rounded-lg"
+                                >
+                                        Đã đặt
+                                </Tag>
+                            </Select.Option>
+                            <Select.Option value={false}>
+                            <Tag
+                                    color='lightgreen'
+                                    style={{ color: 'brown', fontWeight: 'bold' }}
+                                    className="rounded-lg"
+                                >
+                                        Có sẵn
+                                </Tag>
+                            </Select.Option>
+                        </Select>
+                    </Form.Item>
+                    {/* )}*/}
                 </Form>
             </Modal>
         </>

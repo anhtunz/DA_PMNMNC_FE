@@ -159,12 +159,13 @@ const GetAllShiftsPage: React.FC = () => {
 
   return (
   <>
-    <Card title="Thông tin các ca làm" loading={loading}>
-      <div className="flex justify-end mb-4">
+    <Card title="Thông tin các ca làm" loading={loading} extra={
+      <div className="flex justify-end mb-4 mt-4">
         <Button type="primary" onClick={handleCreate}>
           Thêm mới ca làm
         </Button>
       </div>
+    }>
       <TableComponent columns={columns} dataSource={shifts} pageSizeCustom={5} />
     </Card>
     
