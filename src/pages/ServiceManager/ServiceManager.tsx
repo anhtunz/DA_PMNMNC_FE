@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Modal, Table, Input, Space, Image, Checkbox, notification, Form, Alert } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { ColumnType } from 'antd/es/table';
 import { getAllServices, createOrUpdateService } from '../../services/service/serviceService';
 
 interface Service {
@@ -19,6 +22,13 @@ interface ServiceFormData {
   isActive: boolean;
 }
 
+interface ValidationErrors {
+  name?: string;
+  price?: string;
+  description?: string;
+  url?: string;
+}
+
 const ServiceManager: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,9 +38,12 @@ const ServiceManager: React.FC = () => {
     price: 0,
     description: '',
     url: '',
-    isActive: true
+    isActive: true,
   });
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     fetchServices();
@@ -56,13 +69,15 @@ const ServiceManager: React.FC = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'price' ? Number(value) : value
+      [name]: name === 'price' ? Number(value) : value,
     }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      isActive: checked
+    }));
   };
 
   const handleAddService = () => {
@@ -71,32 +86,109 @@ const ServiceManager: React.FC = () => {
       price: 0,
       description: '',
       url: '',
-      isActive: true
+      isActive: true,
     });
+    setErrors({});
+    setErrorMessage(null);
     setEditingServiceId(null);
+    form.resetFields();
     setIsModalOpen(true);
   };
 
   const handleEditService = (service: Service) => {
     setFormData({ ...service });
+    setErrors({});
+    setErrorMessage(null);
     setEditingServiceId(service.id);
+    form.setFieldsValue(service);
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    let isValid = true;
+
+    // Validate name
+    if (!formData.name.trim()) {
+      newErrors.name = "Tên dịch vụ không được để trống.";
+      isValid = false;
+    } else if (/[!@#$%^&*()_+]/.test(formData.name)){
+      newErrors.name = "Tên dịch vụ chỉ được chứa chữ, số, khoảng trắng và dấu - _.";
+      isValid = false;
+    } else if (
+      services.some(service =>
+        service.name.toLowerCase() === formData.name.toLowerCase() &&
+        service.id !== editingServiceId
+      )
+    ) {
+      newErrors.name = "Tên dịch vụ đã tồn tại.";
+      isValid = false;
+    }
+
+    // Validate description
+    if (formData.description) {
+      if (formData.description.length > 255) {
+        newErrors.description = "Mô tả không được vượt quá 255 ký tự.";
+        isValid = false;
+      } else if (/<[^>]*>/.test(formData.description)) {
+        newErrors.description = "Mô tả không được chứa các thẻ HTML hoặc script.";
+        isValid = false;
+      }
+    }
+
+    // Validate url
+    if (!formData.url.trim()) {
+      newErrors.url = "Link ảnh không được để trống.";
+      isValid = false;
+    } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(formData.url)) {
+      newErrors.url = "Link ảnh không hợp lệ. Vui lòng nhập URL hình ảnh đúng định dạng (.jpg, .jpeg, .png, .gif).";
+      isValid = false;
+    }
+
+    // Validate price
+    if (formData.price <= 0) {
+      newErrors.price = "Giá phải là số dương.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    // Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
+
     const payload = editingServiceId
       ? { ...formData, id: editingServiceId }
       : formData;
 
     try {
       setIsLoading(true);
+      console.log('Submitting payload:', payload);
       await createOrUpdateService(payload);
       setIsModalOpen(false);
       fetchServices();
-    } catch (error) {
+      notification.success({
+        message: 'Thành công',
+        description: editingServiceId
+          ? 'Cập nhật dịch vụ thành công'
+          : 'Thêm dịch vụ mới thành công',
+      });
+    } catch (error: any) {
       console.error('Error saving service:', error);
-      alert('Không thể lưu dịch vụ');
+      setErrorMessage(
+        error.response?.data?.message ||
+        'Không thể lưu dịch vụ. Vui lòng thử lại sau.'
+      );
+      notification.error({
+        message: 'Lỗi',
+        description: 'Không thể lưu dịch vụ. Vui lòng kiểm tra lại thông tin.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -104,157 +196,223 @@ const ServiceManager: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setErrors({});
+    setErrorMessage(null);
   };
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold">Quản lý dịch vụ</h1>
-        <button
-          onClick={handleAddService}
-          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
-        >
-          + Thêm dịch vụ
-        </button>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3">STT</th>
-              <th className="px-6 py-3">Ảnh</th>
-              <th className="px-6 py-3">Tên</th>
-              <th className="px-6 py-3">Mô tả</th>
-              <th className="px-6 py-3">Giá</th>
-              <th className="px-6 py-3">Trạng thái</th>
-              <th className="px-6 py-3">Hành động</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {Array.isArray(services) && services.length > 0 ? (
-              services.map((service, index) => (
-                <tr key={service.id} className="text-center align-middle">
-                  <td className="px-6 py-4">{index + 1}</td>
-
-                  <td className="px-6 py-4">
-                    <img
-                      src={service.url || "data:image/png;base64,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"} // Replace with your fallback image URL
-                      alt={service.name}
-                      className="w-16 h-16 object-cover rounded mx-auto"
-                    />
-                  </td>
-
-                  <td className="px-6 py-4">{service.name}</td>
-
-                  <td className="px-6 py-4">{service.description}</td>
-
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {service.price.toLocaleString()} VND
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center space-x-2">
-                      <span
-                        className={`inline-block w-3 h-3 rounded-full animate-pulse ${service.isActive ? 'bg-green-500' : 'bg-red-500'
-                          }`}
-                      ></span>
-                      <span>{service.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleEditService(service)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                      Sửa
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                  {isLoading ? 'Đang tải...' : 'Không có dịch vụ nào'}
-                </td>
-              </tr>
-            )}
-          </tbody>
-
-        </table>
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div
-            className="bg-white rounded-lg w-full max-w-md p-6 z-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4">
-              {editingServiceId ? 'Chỉnh sửa dịch vụ' : 'Thêm dịch vụ'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Tên dịch vụ"
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                placeholder="Giá"
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Mô tả"
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-              <input
-                type="text"
-                name="url"
-                value={formData.url}
-                onChange={handleInputChange}
-                placeholder="Link ảnh"
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleCheckboxChange}
-                />
-                <span>Đang hoạt động</span>
-              </label>
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 bg-gray-300 rounded"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
-                >
-                  {isLoading ? 'Đang lưu...' : 'Lưu'}
-                </button>
-              </div>
-            </form>
-          </div>
+  const columns: ColumnType<Service>[] = [
+    {
+      title: 'STT',
+      key: 'index',
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: 'Ảnh',
+      dataIndex: 'url',
+      key: 'url',
+      render: (url: string) => (
+        <Image
+          width={50}
+          height={50}
+          src={url || 'https://via.placeholder.com/50'}
+          alt="service"
+          style={{ objectFit: 'cover', borderRadius: 8 }}
+        />
+      ),
+    },
+    {
+      title: 'Tên',
+      dataIndex: 'name',
+      key: 'name',
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <Input
+            placeholder="Tìm tên"
+            value={selectedKeys[0] as string}
+            onChange={e =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm
+            </Button>
+            <Button onClick={() => clearFilters?.()} size="small">
+              Xóa
+            </Button>
+          </Space>
         </div>
-      )}
+      ),
+      onFilter: (value, record) =>
+        record.name.toLowerCase().includes((value as string).toLowerCase()),
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Giá',
+      dataIndex: 'price',
+      key: 'price',
+      sorter: (a, b) => a.price - b.price,
+      render: (price: number) => `${price.toLocaleString()} VND`,
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      filters: [
+        { text: 'Đang hoạt động', value: true },
+        { text: 'Ngừng hoạt động', value: false },
+      ],
+      onFilter: (value, record) => record.isActive === value,
+      render: (isActive: boolean) => (
+        <Space>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: isActive ? 'green' : 'red',
+              animation: 'pulse 1.5s infinite',
+            }}
+          />
+          <span>{isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span>
+        </Space>
+      ),
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      render: (_: any, record: Service) => (
+        <Button onClick={() => handleEditService(record)}>Sửa</Button>
+      ),
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="container mx-auto p-4 bg-white shadow-md rounded-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-4xl font-bold">Quản lý dịch vụ</h1>
+          <Button type="primary" onClick={handleAddService}>
+            + Thêm dịch vụ
+          </Button>
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={services}
+          loading={isLoading}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
+
+        {isModalOpen && (
+          <Modal
+            title={editingServiceId ? 'Chỉnh sửa dịch vụ' : 'Thêm dịch vụ'}
+            open={isModalOpen}
+            onCancel={closeModal}
+            onOk={() => handleSubmit()}
+            okText="Lưu"
+            cancelText="Hủy"
+            confirmLoading={isLoading}
+          >
+            {errorMessage && (
+              <Alert
+                message="Lỗi"
+                description={errorMessage}
+                type="error"
+                showIcon
+                className="mb-4"
+                closable
+                onClose={() => setErrorMessage(null)}
+              />
+            )}
+
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
+              <Form.Item
+                label={<span>Tên dịch vụ <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={errors.name ? 'error' : ''}
+                help={errors.name}
+              >
+                <Input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Nhập tên dịch vụ"
+                  status={errors.name ? 'error' : ''}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={<span>Giá <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={errors.price ? 'error' : ''}
+                help={errors.price}
+              >
+                <Input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  placeholder="Nhập giá dịch vụ"
+                  addonAfter="VND"
+                  status={errors.price ? 'error' : ''}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Mô tả"
+                validateStatus={errors.description ? 'error' : ''}
+                help={errors.description}
+              >
+                <Input.TextArea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Nhập mô tả dịch vụ (không bắt buộc)"
+                  status={errors.description ? 'error' : ''}
+                  showCount
+                  maxLength={255}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={<span>Link ảnh <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={errors.url ? 'error' : ''}
+                help={errors.url}
+              >
+                <Input
+                  name="url"
+                  value={formData.url}
+                  onChange={handleInputChange}
+                  placeholder="Nhập URL hình ảnh (.jpg, .jpeg, .png, .gif)"
+                  status={errors.url ? 'error' : ''}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Checkbox
+                  checked={formData.isActive}
+                  onChange={e => handleCheckboxChange(e.target.checked)}
+                >
+                  Đang hoạt động
+                </Checkbox>
+              </Form.Item>
+            </Form>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 };
