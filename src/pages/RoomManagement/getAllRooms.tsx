@@ -1,8 +1,9 @@
-import { Button, Card, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Tag, Image } from 'antd'
+import { Button, Card, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Tag, Image, Upload } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { NetworkManager } from '../../config/network_manager'
 import { toastService } from '../../services/toast/ToastService'
 import TableComponent from '../../components/common/TableComponent'
+import { InboxOutlined } from '@ant-design/icons'
 // import TableComponent from '../../components/common/TableComponent'
 // import axios from "axios"
 
@@ -28,17 +29,86 @@ const GetAllRoomsPage: React.FC = () => {
   const [previewKey, setPreviewKey] = useState(0) // Thêm key để force update
   const [form] = Form.useForm()
 
+  const { Dragger } = Upload
+
+  // Thêm props upload cho Dragger
+  const uploadProps = {
+    name: 'file',
+    multiple: false,
+    showUploadList: false,
+    customRequest: async (options: any) => {
+      const { file, onSuccess, onError } = options
+      try {
+        setLoading(true)
+        const formData = new FormData()
+
+        formData.append('image', file)
+
+        // Debug: Kiểm tra FormData trước khi gửi
+        console.log('File to upload:', file)
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value)
+        }
+
+        const response = await NetworkManager.instance.createDataInServer('/upload-image', formData)
+        
+        if (response?.data?.data?.url) {
+          onSuccess({
+            url: response.data.data.url // Truyền đúng cấu trúc data mà Upload component mong đợi
+          }, file)
+        
+          // Cập nhật form và preview
+          form.setFieldsValue({ url: response.data.data.url })
+          setPreviewUrl(response.data.data.url)
+          toastService.success('Tải lên ảnh thành công')
+        } else {
+          throw new Error('Không nhận được URL từ API')
+        }
+
+      } catch (error: any) {
+        console.error('Upload error:', error)
+        onError(error)
+        toastService.error('Tải lên ảnh thất bại: ' + (error.response?.data?.message || error.message))
+      } finally {
+        setLoading(false)
+      }
+    },
+    beforeUpload: (file: File) => {
+      const isImage = file.type.startsWith('image/')
+      const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+      const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+
+      if (!(file instanceof File)) {
+        toastService.error('Dữ liệu upload không hợp lệ')
+        return false
+      }
+      if (!isImage) {
+        toastService.error('Chỉ được tải lên file ảnh!')
+        return Upload.LIST_IGNORE;
+      }
+      if (file.size > MAX_SIZE) {
+        toastService.error('Ảnh phải nhỏ hơn 5MB!')
+        return Upload.LIST_IGNORE
+      }
+      if (!isValidType) {
+        toastService.error('Chỉ chấp nhận ảnh JPG/PNG/WEBP')
+        return Upload.LIST_IGNORE
+      }
+      return true
+    },
+  }
+
   useEffect(() => {
     fetchData()
   }, [])
 
   // Xử lý khi URL thay đổi
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUrl = e.target.value
-    form.setFieldsValue({ url: newUrl }) // Cập nhật giá trị trong form
-    setPreviewUrl(newUrl)
-    setPreviewKey((prev) => prev + 1)
-  }
+  // const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const newUrl = e.target.value
+  //   form.setFieldsValue({ url: newUrl }) // Cập nhật giá trị trong form
+  //   setPreviewUrl(newUrl)
+  //   setPreviewKey((prev) => prev + 1)
+  // }
 
   // Hàm gọi API để lấy dữ liệu
   const fetchData = async (search = '') => {
@@ -243,47 +313,53 @@ const GetAllRoomsPage: React.FC = () => {
             <Input placeholder='Nhập tên phòng' className='rounded-lg' />
           </Form.Item>
 
-          {/* Trường nhập đường dẫn hình ảnh */}
+          {/* Trường nhập hình ảnh */}
           <Form.Item
-            name='url'
-            label='Hình ảnh'
-            rules={[
-              { required: true, message: 'Vui lòng nhập đường dẫn hình ảnh!' },
-              { type: 'url', message: 'Đường dẫn không hợp lệ!' }
-            ]}
+            name="url"
+            label="Hình ảnh"
+            rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}
           >
-            <Input placeholder='Nhập đường dẫn hình ảnh' onChange={handleUrlChange} />
-            {/* Hiển thị ảnh xem trước */}
+            <Dragger {...uploadProps}>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Kéo thả ảnh vào đây hoặc click để chọn</p>
+              <p className="ant-upload-hint">
+                Hỗ trợ tải lên 1 ảnh duy nhất. Dung lượng tối đa 5MB
+              </p>
+            </Dragger>
+            
             {(previewUrl || form.getFieldValue('url')) && (
               <div style={{ marginTop: 16 }}>
                 <Image
-                  key={`preview-${previewKey}`} // Sử dụng key để force reload ảnh
+                  key={`preview-${previewKey}`}
                   width={200}
-                  height={150}
-                  src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`} // Thêm query string để tránh cache
-                  alt='Preview'
-                  style={{
+                  src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`}
+                  alt="Preview"
+                  style={{ 
                     objectFit: 'cover',
                     borderRadius: 4,
                     border: '1px solid #d9d9d9'
                   }}
                   placeholder={
-                    <div
-                      style={{
-                        width: 200,
-                        height: 150,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#f0f0f0'
-                      }}
-                    >
+                    <div style={{ 
+                      width: 200, 
+                      height: 150, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      backgroundColor: '#f0f0f0'
+                    }}>
                       Đang tải ảnh...
                     </div>
                   }
-                  fallback='https://via.placeholder.com/200x150?text=Không+thể+tải+ảnh'
+                  fallback="https://via.placeholder.com/200x150?text=Không+thể+tải+ảnh"
                 />
-                <Button type='link' onClick={() => setPreviewKey((prev) => prev + 1)} style={{ marginTop: 8 }}>
+                <Button 
+                  type="link" 
+                  onClick={() => setPreviewKey(prev => prev + 1)}
+                  style={{ marginTop: 8 }}
+                >
                   Tải lại ảnh
                 </Button>
               </div>
