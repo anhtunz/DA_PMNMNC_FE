@@ -200,7 +200,7 @@ const ForgetPassword = () => {
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
           <div>
             <img
-              src='https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png'
+              src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891268/DAPMNM/logoipsum-369_hkvytu.svg'
               className='w-32 mx-auto'
             />
           </div>

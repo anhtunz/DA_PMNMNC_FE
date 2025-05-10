@@ -1,7 +1,7 @@
 // routes/AppRouter.tsx
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Login from '../pages/Login'
-import Dashboard from '../pages/Dashboard'
+import Dashboard from '../pages/Dashboard/DashBoard'
 import NotFound from '../pages/NotFound'
 import Unauthorized from '../pages/Unauthorized'
 import PublicRoute from './publicRoutes'
@@ -18,9 +18,14 @@ import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
 import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
+
+
+// import AddShiftPage from '../pages/ShiftManagement/addshift'
+import CreateInvoice from '../pages/invoice/CreateInvoice'
+
 import ServiceManager from '../pages/ServiceManager/ServiceManager'
 import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
-import GetRoomsForStaffPage from '../pages/RoomManagement/getAllRoomsForStaff'
+
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -51,7 +56,7 @@ const router = createBrowserRouter([
       { path: 'personal-workshift-history', element: <PersonalWorkshift /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'shift-registration', element: <ShiftRegistration /> },
-      { path: 'list-of-rooms-for-staff', element: <GetRoomsForStaffPage /> },
+      { path: 'create-invoice', element: <CreateInvoice /> },
 
       // ADMIN ROUTES
       {
@@ -65,7 +70,7 @@ const router = createBrowserRouter([
           { path: 'service-manager', element: <ServiceManager /> },
           { path: 'list-of-rooms', element: <GetAllRoomsPage /> }
         ]
-      },
+      }
     ]
   },
   {

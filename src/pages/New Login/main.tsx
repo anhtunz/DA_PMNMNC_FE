@@ -7,7 +7,7 @@ const NewLogin = () => {
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
           <div>
             <img
-              src='https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png'
+              src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891268/DAPMNM/logoipsum-369_hkvytu.svg'
               className='w-32 mx-auto'
             />
           </div>
@@ -101,7 +101,10 @@ const NewLogin = () => {
         <div className='flex-1 bg-indigo-100 text-center hidden lg:flex'>
           <div
             className='m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat'
-            style={{ backgroundImage: "url('https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg')" }}
+            style={{
+              backgroundImage:
+                "url('https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg')"
+            }}
           ></div>
         </div>
       </div>
