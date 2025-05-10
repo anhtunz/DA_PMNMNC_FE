@@ -1,7 +1,7 @@
 import { ClockCircleOutlined, HomeFilled, PieChartOutlined, UserOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ApplicationConstants from '../../constant/ApplicationConstant'
 import { useAuth } from '../../context/AuthContext'
@@ -83,7 +83,7 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         ]
       },
       {
-        key: '/room-management',
+        key: '/list-of-rooms',
         label: 'Quản lý phòng',
         icon: < HomeFilled/>
       },

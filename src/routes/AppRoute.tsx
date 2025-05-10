@@ -25,54 +25,6 @@ import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
 const router = createBrowserRouter([
   // PUBLIC ROUTES
   {
-    path: '/',
-    element: (
-      <MainLayout />
-    ),
-    children: [
-      {
-        path: 'dashboard',
-        element: <Dashboard />
-      },
-      {
-        path: 'employees',
-        element: <EmployeePage />
-      },
-      {
-        path: 'workshift-staff',
-        element: <WorkshiftStaffPage />
-      },
-      {
-        path: 'history-workshift-staff',
-        element: <HistoryWorkshiftStaffPage />
-      },
-      {
-        path: ApplicationConstants.PERSONAL_HISTORY_WORKSHIFT,
-        element: <PersonalWorkshift />
-      },
-      {
-        path: 'profile',
-        element: <ProfilePage /> // Assuming you have a ProfilePage component
-      },
-      {
-        path: 'shift-registration',
-        element: <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]}><ShiftRegistration /></ProtectedRoute> // Assuming you have a ShiftRegistration component
-      },
-      {
-        path: ApplicationConstants.USERS_MANAGER_PATH,
-        element: <UsersManager />
-      },
-      {
-        path: 'list-of-shifts',
-        element: <GetAllShiftsPage />
-      },
-      {
-        path: 'list-of-rooms',
-        element: <GetAllRoomsPage />
-      }
-    ]
-  },
-  {
     path: '/login',
     element: (
       <PublicRoute>
@@ -110,7 +62,8 @@ const router = createBrowserRouter([
           { path: 'users-manager', element: <UsersManager /> },
           { path: 'add-shift', element: <AddShiftPage /> },
           { path: 'list-of-shifts', element: <GetAllShiftsPage /> },
-          { path: 'service-manager', element: <ServiceManager /> }
+          { path: 'service-manager', element: <ServiceManager /> },
+          { path: 'list-of-rooms', element: <GetAllRoomsPage /> }
         ]
       },
     ]
