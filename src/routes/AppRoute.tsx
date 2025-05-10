@@ -1,7 +1,7 @@
 // routes/AppRouter.tsx
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Login from '../pages/Login'
-import Dashboard from '../pages/Dashboard'
+import Dashboard from '../pages/Dashboard/DashBoard'
 import NotFound from '../pages/NotFound'
 import Unauthorized from '../pages/Unauthorized'
 import PublicRoute from './publicRoutes'

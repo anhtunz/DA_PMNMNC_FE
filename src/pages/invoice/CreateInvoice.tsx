@@ -53,7 +53,7 @@ const InvoiceCreationForm: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAddCustomerButtonOpen, setIsAddCustomerButtonOpen] = useState(false)
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [customer, setCustomer] = useState<Customer | null>()
+  const [customer, setCustomer] = useState<Customer | null>(null)
 
   const handleModalSubmit = (data: any) => {
     if (isServiceSelected) {
@@ -277,8 +277,14 @@ const InvoiceCreationForm: React.FC = () => {
       const values = await form.validateFields()
 
       // Thêm các kiểm tra bổ sung nếu cần
+      if (customer === null) {
+        toastService.warning('Chưa có thông tin khách hàng')
+        setLoading(false)
+        return
+      }
       if (roomSelect.length === 0) {
         toastService.warning('Chọn phòng cần thuê!')
+        setLoading(false)
         return
       }
 
