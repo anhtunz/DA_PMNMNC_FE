@@ -2,12 +2,8 @@ import {
   ClockCircleOutlined,
   EditOutlined,
   FileAddOutlined,
-  HomeFilled,
   HomeOutlined,
-  PieChartOutlined,
-  SolutionOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+  SolutionOutlined} from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'

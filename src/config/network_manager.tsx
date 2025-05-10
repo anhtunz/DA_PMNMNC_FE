@@ -79,13 +79,21 @@ class NetworkManager {
    * @param body Contains the data to be sent
    * @returns The HTTP status code of the response
    */
-  async createDataInServer(path: string, body: Record<string, any>): Promise<any> {
+  async createDataInServer(path: string, body: Record<string, any> | FormData): Promise<any> {
     try {
-      console.log(`[${new Date().toLocaleTimeString()}] POST url: ${ApplicationConstants.DOMAIN}/${path}`)
-      const response = await this.axiosInstance.post(path, body, {
-        validateStatus: (status) => status === 200
-      })
-      return response
+      console.log(`[${new Date().toLocaleTimeString()}] POST url: ${ApplicationConstants.DOMAIN}/${path}`);
+      const config = {
+        validateStatus: (status: number) => status === 200,
+        headers: {} as Record<string, string>
+      };
+
+      // Nếu body là FormData (upload file), set header Content-Type phù hợp
+      if (body instanceof FormData) {
+        config.headers['Content-Type'] = 'multipart/form-data';
+      }
+
+      const response = await this.axiosInstance.post(path, body, config);
+      return response;
     } catch (error: any) {
       throw error.response
     }
