@@ -32,11 +32,23 @@ class APIPathConstants {
   static readonly ACCEPT_USER_SHIFT = 'consider-user-shift/accept-user-shift'
   static readonly DENY_USER_SHIFT = 'consider-user-shift/deny-user-shift'
 
-   // Quản lý danh mục
-   static readonly CATEGORY_LIST = 'category'
-   static readonly ADMIN_CREATE_CATEGORY = 'admin/category/create'
-   static readonly ADMIN_UPDATE_CATEGORY = 'admin/category'
-   static readonly ADMIN_DELETE_CATEGORY = 'admin/category'
+   // Quản lý dịch vụ (service)
+   static readonly SERVICE_LIST = 'service/get-all-service';
+   static readonly SERVICE_CREATE_OR_UPDATE = 'service/create-or-update-service';
+
+  // Quản lý danh mục
+  static readonly CATEGORY_LIST = 'category'
+  static readonly ADMIN_CREATE_CATEGORY = 'admin/category/create'
+  static readonly ADMIN_UPDATE_CATEGORY = 'admin/category'
+  static readonly ADMIN_DELETE_CATEGORY = 'admin/category'
+
+  // Tạo mới hóa đơn
+  static readonly GET_ALL_SERVICE_STAFF = 'get-all-service'
+  static readonly GET_ALL_ROOM_STAFF = 'get-all-room'
+  static readonly SEARCH_CUSTOMER = 'booking-management/find-customer'
+  static readonly CREATE_CUSTOMER = 'booking-management/create-customer'
+  static readonly BOOKING_ROOM = 'booking-management/booking-room'
+
 }
 
 export default APIPathConstants

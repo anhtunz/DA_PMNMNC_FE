@@ -1,7 +1,7 @@
-import { ClockCircleOutlined, FileAddOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, FileAddOutlined, HomeFilled, PieChartOutlined, UserOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ApplicationConstants from '../../constant/ApplicationConstant'
 import { useAuth } from '../../context/AuthContext'
@@ -83,17 +83,21 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         label: 'Quản lý ca làm',
         icon: <ClockCircleOutlined />,
         children: [
-          { key: '/add-shift', label: 'Thêm ca làm mới' },
           { key: '/list-of-shifts', label: 'Danh sách ca làm' },
           { key: '/workshift-staff', label: 'Duyệt ca làm' }
         ]
       },
       {
-        key: '/category-manager',
-        label: 'Danh mục sản phẩm',
+        key: '/list-of-rooms',
+        label: 'Quản lý phòng',
+        icon: <HomeFilled />
+      },
+      {
+        key: '/service-manager',
+        label: 'Quản lý dịch vụ',
         icon: <ClockCircleOutlined />
       },
-      
+
       {
         key: ApplicationConstants.USERS_MANAGER_PATH,
         label: ApplicationConstants.USERS_MANAGER_PATH_NAME,
@@ -106,8 +110,14 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
     <div className='h-dvh bg-white overflow-auto '>
       <Sider trigger={null} collapsible collapsed={collapsed} className='fixed top-0 left-0  max-md:hidden'>
         <div className='p-4 pb-2 flex justify-between items-center bg-white'>
-          <img src='https://img.logoipsum.com/243.svg ' className={`${!collapsed ? 'w-32' : 'w-0'}`} />
-          <img src='https://img.logoipsum.com/245.svg ' className={`${!collapsed ? 'w-0' : 'w-14'}`} />
+          <img
+            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891268/DAPMNM/logoipsum-369_hkvytu.svg'
+            className={`${!collapsed ? 'w-32' : 'w-0'}`}
+          />
+          <img
+            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891347/DAPMNM/logoipsum-370_rssaf5.svg'
+            className={`${!collapsed ? 'w-0' : 'w-14'}`}
+          />
         </div>
         <Menu
           className=''

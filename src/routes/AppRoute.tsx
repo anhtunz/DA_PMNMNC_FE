@@ -15,13 +15,17 @@ import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
 import PersonalWorkshift from '../pages/workshift-staff/PersonalWorkshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
-import AddShiftPage from '../pages/ShiftManagement/addshift'
 import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
-import CategoryManager from '../pages/Category/CategoryManager'
+
+
 // import AddShiftPage from '../pages/ShiftManagement/addshift'
 import CreateInvoice from '../pages/invoice/CreateInvoice'
+
+import ServiceManager from '../pages/ServiceManager/ServiceManager'
+import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
+
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -62,9 +66,9 @@ const router = createBrowserRouter([
           { path: 'workshift-staff', element: <WorkshiftStaffPage /> },
           { path: 'staff-workshift-history', element: <HistoryWorkshiftStaffPage /> },
           { path: 'users-manager', element: <UsersManager /> },
-          { path: 'add-shift', element: <AddShiftPage /> },
           { path: 'list-of-shifts', element: <GetAllShiftsPage /> },
-          { path: 'category-manager', element: <CategoryManager /> }
+          { path: 'service-manager', element: <ServiceManager /> },
+          { path: 'list-of-rooms', element: <GetAllRoomsPage /> }
         ]
       }
     ]

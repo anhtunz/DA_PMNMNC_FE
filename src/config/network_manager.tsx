@@ -117,7 +117,7 @@ class NetworkManager {
     try {
       console.log(`[${new Date().toLocaleTimeString()}] PUT url: ${ApplicationConstants.DOMAIN}/${path}`)
       const response = await this.axiosInstance.put(path, body, {
-        validateStatus: (status) => status === 200
+        validateStatus: (status) =>   status === 200
       })
       return response
     } catch (error: any) {
