@@ -1,13 +1,10 @@
 import { Button, Card, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Tag, Image, Upload } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { NetworkManager } from '../../config/network_manager'
 import { toastService } from '../../services/toast/ToastService'
 import TableComponent from '../../components/common/TableComponent'
 import { InboxOutlined } from '@ant-design/icons'
-// import TableComponent from '../../components/common/TableComponent'
-// import axios from "axios"
-
-// const url = "http://127.0.0.1:8000/api/room-management/get-all"
+import { createOrUpdateRoom, getAllRooms } from '../../services/room/roomService'
+import { uploadImage } from '../../services/uploadImage/uploadImageService'
 
 interface Room {
   id?: string
@@ -50,11 +47,11 @@ const GetAllRoomsPage: React.FC = () => {
           console.log(key, value)
         }
 
-        const response = await NetworkManager.instance.createDataInServer('/upload-image', formData)
+        const response = await uploadImage(formData)
         
         if (response?.data?.data?.url) {
           onSuccess({
-            url: response.data.data.url // Truyền đúng cấu trúc data mà Upload component mong đợi
+            url: response.data.data.url
           }, file)
         
           // Cập nhật form và preview
@@ -74,27 +71,44 @@ const GetAllRoomsPage: React.FC = () => {
       }
     },
     beforeUpload: (file: File) => {
-      const isImage = file.type.startsWith('image/')
-      const MAX_SIZE = 5 * 1024 * 1024 // 5MB
-      const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+      // Danh sách loại file cho phép
+      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+      // Kích thước tối đa cho phép (5MB)
+      const MAX_SIZE_MB = 5;
+      const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024; // 5MB
 
-      if (!(file instanceof File)) {
-        toastService.error('Dữ liệu upload không hợp lệ')
-        return false
+      // Kiểm tra theo thứ tự ưu tiên
+      const validations = [
+        {
+          condition: !(file instanceof File),
+          message: 'Dữ liệu upload không hợp lệ',
+          returnValue: false
+        },
+        {
+          condition: !file.type.startsWith('image/'),
+          message: 'Chỉ được tải lên file ảnh!',
+          returnValue: Upload.LIST_IGNORE
+        },
+        {
+          condition: file.size > MAX_SIZE,
+          message: `Ảnh phải nhỏ hơn ${MAX_SIZE_MB}MB!`,
+          returnValue: Upload.LIST_IGNORE
+        },
+        {
+          condition: !ALLOWED_TYPES.includes(file.type),
+          message: 'Chỉ chấp nhận ảnh JPG/PNG/WEBP',
+          returnValue: Upload.LIST_IGNORE
+        }
+      ];
+
+      // Tìm lỗi đầu tiên
+      const error = validations.find(v => v.condition);
+      if (error) {
+        toastService.error(error.message);
+        return error.returnValue;
       }
-      if (!isImage) {
-        toastService.error('Chỉ được tải lên file ảnh!')
-        return Upload.LIST_IGNORE;
-      }
-      if (file.size > MAX_SIZE) {
-        toastService.error('Ảnh phải nhỏ hơn 5MB!')
-        return Upload.LIST_IGNORE
-      }
-      if (!isValidType) {
-        toastService.error('Chỉ chấp nhận ảnh JPG/PNG/WEBP')
-        return Upload.LIST_IGNORE
-      }
-      return true
+
+      return true;
     },
   }
 
@@ -102,22 +116,12 @@ const GetAllRoomsPage: React.FC = () => {
     fetchData()
   }, [])
 
-  // Xử lý khi URL thay đổi
-  // const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const newUrl = e.target.value
-  //   form.setFieldsValue({ url: newUrl }) // Cập nhật giá trị trong form
-  //   setPreviewUrl(newUrl)
-  //   setPreviewKey((prev) => prev + 1)
-  // }
-
   // Hàm gọi API để lấy dữ liệu
   const fetchData = async (search = '') => {
     setIsModalOpen(false)
     setLoading(true)
     try {
-      const response = await NetworkManager.instance.createDataInServer('/room-management/get-all', {
-        nameSearch: search
-      })
+      const response = await getAllRooms({ searchName: search })
       if (response) setData(response.data.data)
     } catch (error: any) {
       toastService.error(error.data?.message || 'Có lỗi xảy ra')
@@ -161,7 +165,7 @@ const GetAllRoomsPage: React.FC = () => {
         ...values,
         id: editingRoom ? editingRoom?.id : null
       }
-      const response = await NetworkManager.instance.createDataInServer('/room-management/create-or-update-room', body)
+      const response = await createOrUpdateRoom(body)
       if (!response) {
         console.error('Response is undefined')
         return
@@ -176,9 +180,7 @@ const GetAllRoomsPage: React.FC = () => {
     }
   }
 
-  /*
-   * Các cột trong bảng
-   */
+  // Cấu hình các cột cho bảng
   const columns = [
     {
       title: 'Tên phòng',
@@ -295,7 +297,7 @@ const GetAllRoomsPage: React.FC = () => {
       <Modal
         title={editingRoom ? 'Cập nhật phòng' : 'Tạo phòng'}
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {setIsModalOpen(false); form.resetFields()}}
         onOk={handleSubmit}
         cancelText='Hủy'
         okText='Cập nhật'
@@ -313,7 +315,7 @@ const GetAllRoomsPage: React.FC = () => {
             <Input placeholder='Nhập tên phòng' className='rounded-lg' />
           </Form.Item>
 
-          {/* Trường nhập hình ảnh */}
+          {/* Trường tải lên hình ảnh */}
           <Form.Item
             name="url"
             label="Hình ảnh"
