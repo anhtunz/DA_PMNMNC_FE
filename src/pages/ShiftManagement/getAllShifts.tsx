@@ -141,6 +141,7 @@ const GetAllShiftsPage: React.FC = () => {
       title: "Bắt đầu",
       dataIndex: "time_start",
       key: "time_start",
+      defaultSortOrder: "ascend" as const,
       sorter: (a: any, b: any) => a.time_start.localeCompare(b.time_start),
     },
     {
