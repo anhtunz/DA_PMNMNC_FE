@@ -27,6 +27,11 @@ class APIPathConstants {
   static readonly USER_REGISTER_SHIFT = 'user-register-shift/subscribe-or-unsubscribe-shift'
   static readonly GET_ALL_USER_REGISTERED_SHIFTS = 'user-register-shift/get-all-user-shift'
 
+  // Quản lý phòng
+  static readonly ADMIN_GET_ALL_ROOM = 'room-management/get-all'
+  static readonly ADMIN_CREATE_OR_UPDATE_ROOM = 'room-management/create-or-update-room'
+  static readonly UPLOAD_IMAGE = '/upload-image'
+
   // Quản lý ca làm việc
   static readonly GET_ALL_USER_SHIFTS = 'consider-user-shift/get-all'
   static readonly ACCEPT_USER_SHIFT = 'consider-user-shift/accept-user-shift'
@@ -48,6 +53,7 @@ class APIPathConstants {
   static readonly SEARCH_CUSTOMER = 'booking-management/find-customer'
   static readonly CREATE_CUSTOMER = 'booking-management/create-customer'
   static readonly BOOKING_ROOM = 'booking-management/booking-room'
+
   // Trang chủ
   static readonly GET_ALL_ROOM = 'booking-management/search-all-room'
   static readonly GET_DETAIL_ROOM_USING = 'booking-management/get-detail-room-using'
