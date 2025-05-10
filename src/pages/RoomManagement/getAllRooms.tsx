@@ -27,6 +27,10 @@ const GetAllRoomsPage: React.FC = () => {
     const [loading, setLoading] = useState(false)
     const [previewKey, setPreviewKey] = useState(0) // Thêm key để force update
     const [form] = Form.useForm()
+    
+    useEffect(() => {
+        fetchData()
+    }, [])
 
     // Xử lý khi URL thay đổi
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +40,7 @@ const GetAllRoomsPage: React.FC = () => {
         setPreviewKey(prev => prev + 1)
     }
     
+    // Hàm gọi API để lấy dữ liệu
     const fetchData = async (search = '') => {
         setIsModalOpen(false)
         setLoading(true)
@@ -49,14 +54,12 @@ const GetAllRoomsPage: React.FC = () => {
         }
     }
 
-    useEffect(() => {
-        fetchData()
-    }, [])
-
+    // Hàm xử lý tìm kiếm
     const handleSearch = () => {
         fetchData(nameSearch.trim())
     }
 
+    // Hàm xử lý khi nhấn nút "Thêm phòng"
     const handleCreate = () => {
         setEditingRoom(null)
         form.resetFields()
@@ -67,6 +70,7 @@ const GetAllRoomsPage: React.FC = () => {
         setIsModalOpen(true)
     }
 
+    // Hàm xử lý khi nhấn nút "Sửa"
     const handleEdit = (record: any) => {
         setEditingRoom(record)
         form.setFieldsValue({
@@ -77,6 +81,7 @@ const GetAllRoomsPage: React.FC = () => {
         setIsModalOpen(true)
     }
 
+    // Hàm xử lý khi nhấn nút "Cập nhật" trong modal
     const handleSubmit = async () => {
         try {
             const values = await form.validateFields()
@@ -99,27 +104,10 @@ const GetAllRoomsPage: React.FC = () => {
         }
     }
 
-    // const handleDelete = async (record: any) => {
-    //     const modal = Modal.confirm({
-    //         title: 'Xóa phòng',
-    //         content: `Bạn có chắc chắn muốn xóa phòng '${record.name}' không?`,
-    //         okText: 'Xóa',
-    //         cancelText: 'Hủy',
-    //         okButtonProps: { disabled: true },
-    //         onCancel: () => modal.destroy(),
-    //         onOk: async () => {
-    //             try {
-    //                 await NetworkManager.instance.deleteDataInServer(`admin/rooms/${record.id}`)
-    //                 toastService.success('Xóa phòng thành công')
-    //                 fetchData()
-    //             } catch (error: any) {
-    //                 toastService.error(error.data?.message || 'Có lỗi xảy ra')
-    //             }
-    //         },
-    //     })
-    //     setTimeout(() => modal.update({ okButtonProps: { disabled: false } }), 1000)
-    // }
 
+    /*
+    * Các cột trong bảng
+    */
     const columns = [
         {
             title: 'Tên phòng',
@@ -214,13 +202,6 @@ const GetAllRoomsPage: React.FC = () => {
                     <Button onClick={() => { setNameSearch(''); fetchData() }} className="rounded-lg">Đặt lại</Button>
                 </Space.Compact>
                 </div>
-                {/* <Table
-                    columns={columns}
-                    dataSource={data}
-                    rowKey="id"
-                    scroll={{ x: 800 }}
-                    loading={loading}
-                /> */}
                 <TableComponent columns={columns} dataSource={data} pageSizeCustom={5} />
             </Card>
 
@@ -233,6 +214,8 @@ const GetAllRoomsPage: React.FC = () => {
                 okText="Cập nhật"
             >
                 <Form form={form} layout="vertical">
+
+                    {/* Trường nhập tên */}
                     <Form.Item
                         name="name"
                         label="Tên phòng"
@@ -244,6 +227,7 @@ const GetAllRoomsPage: React.FC = () => {
                         <Input placeholder="Nhập tên phòng" className="rounded-lg" />
                     </Form.Item>
 
+                    {/* Trường nhập đường dẫn hình ảnh */}
                     <Form.Item
                         name="url"
                         label="Hình ảnh"
@@ -256,6 +240,7 @@ const GetAllRoomsPage: React.FC = () => {
                             placeholder="Nhập đường dẫn hình ảnh"
                             onChange={handleUrlChange}
                         />
+                        {/* Hiển thị ảnh xem trước */}
                         {(previewUrl || form.getFieldValue('url')) && (
                             <div style={{ marginTop: 16 }}>
                             <Image
@@ -294,6 +279,7 @@ const GetAllRoomsPage: React.FC = () => {
                         )}
                     </Form.Item>
 
+                    {/* Trường nhập mô tả */}
                     <Form.Item
                         name="description"
                         label="Mô tả"
@@ -306,6 +292,7 @@ const GetAllRoomsPage: React.FC = () => {
                         <Input.TextArea placeholder="Nhập mô tả" rows={4} showCount maxLength={100} className="rounded-lg" />
                     </Form.Item>
 
+                    {/* Trường chọn loại phòng */}
                     <Form.Item
                         name="type"
                         label="Loại phòng"
@@ -316,7 +303,8 @@ const GetAllRoomsPage: React.FC = () => {
                             <Select.Option value={"1"}>Phòng đôi</Select.Option>
                         </Select>
                     </Form.Item>
-
+                    
+                    {/* Trường nhập giá phòng */}
                     <Form.Item
                         name="price"
                         label="Giá phòng (VND)"
@@ -330,7 +318,8 @@ const GetAllRoomsPage: React.FC = () => {
                         />
                     </Form.Item>
 
-                    {/* {!editingRoom && ( */}
+                    {/* Trường trạng thái (chỉ hiển thị khi sửa thông tin phòng) */}
+                    {editingRoom && (
                     <Form.Item
                         name="isActive"
                         label="Trạng thái"
@@ -340,7 +329,7 @@ const GetAllRoomsPage: React.FC = () => {
                             Đã đặt
                         </Checkbox>
                     </Form.Item>
-                    {/* )}*/}
+                    )}
                 </Form>
             </Modal>
         </>
