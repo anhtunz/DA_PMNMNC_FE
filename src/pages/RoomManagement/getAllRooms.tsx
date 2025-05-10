@@ -2,30 +2,40 @@ import { Button, Card, Checkbox, Form, Input, InputNumber, Modal, Select, Space,
 import React, { useEffect, useState } from "react"
 import { NetworkManager } from "../../config/network_manager"
 import { toastService } from "../../services/toast/ToastService"
-import TableComponent from "../../components/common/TableComponent";
-// import TableComponent from '../../components/common/TableComponent';
+import TableComponent from "../../components/common/TableComponent"
+// import TableComponent from '../../components/common/TableComponent'
 // import axios from "axios"
 
 // const url = "http://127.0.0.1:8000/api/room-management/get-all"
 
 interface Room {
-    id?: string;
-    name: string;
-    description: string;
-    type: string;
-    price: number;
-    isActive: boolean;
-    url: string;
+    id?: string
+    name: string
+    description: string
+    type: string
+    price: number
+    isActive: boolean
+    url?: string
 }
 
 const GetAllRoomsPage: React.FC = () => {
     const [data, setData] = useState<Room[]>([])
     const [nameSearch, setNameSearch] = useState('')
-    const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+    const [previewUrl, setPreviewUrl] = useState('')
+    const [editingRoom, setEditingRoom] = useState<Room | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [previewKey, setPreviewKey] = useState(0) // Thêm key để force update
     const [form] = Form.useForm()
 
+    // Xử lý khi URL thay đổi
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newUrl = e.target.value
+        form.setFieldsValue({ url: newUrl }) // Cập nhật giá trị trong form
+        setPreviewUrl(newUrl)
+        setPreviewKey(prev => prev + 1)
+    }
+    
     const fetchData = async (search = '') => {
         setIsModalOpen(false)
         setLoading(true)
@@ -37,11 +47,11 @@ const GetAllRoomsPage: React.FC = () => {
         } finally {
             setLoading(false)
         }
-    };
+    }
 
     useEffect(() => {
         fetchData()
-    }, []);
+    }, [])
 
     const handleSearch = () => {
         fetchData(nameSearch.trim())
@@ -53,14 +63,19 @@ const GetAllRoomsPage: React.FC = () => {
         form.setFieldsValue({
             isActive: false
         })
+        setPreviewUrl('')
         setIsModalOpen(true)
-    };
+    }
 
     const handleEdit = (record: any) => {
         setEditingRoom(record)
-        form.setFieldsValue(record)
+        form.setFieldsValue({
+            ...record,
+            url: record.url,
+        })
+        setPreviewUrl(record.url || '')
         setIsModalOpen(true)
-    };
+    }
 
     const handleSubmit = async () => {
         try {
@@ -68,23 +83,21 @@ const GetAllRoomsPage: React.FC = () => {
             const body = {
                 ...values,
                 id: editingRoom ? editingRoom?.id : null,
-            };
+            }
             const response = await NetworkManager.instance.createDataInServer('/room-management/create-or-update-room', body)
             if (!response) {
                 console.error('Response is undefined')
                 return
-            }
-
-            console.log(response);
-            
+            }     
             toastService.success(editingRoom ? 'Cập nhật phòng thành công' : 'Tạo phòng thành công')
+            form.resetFields()
             setIsModalOpen(false)
             fetchData()
         } catch (error: any) {
             toastService.error(error.data?.message || 'Có lỗi xảy ra')
             console.error(error)
         }
-    };
+    }
 
     // const handleDelete = async (record: any) => {
     //     const modal = Modal.confirm({
@@ -105,7 +118,7 @@ const GetAllRoomsPage: React.FC = () => {
     //         },
     //     })
     //     setTimeout(() => modal.update({ okButtonProps: { disabled: false } }), 1000)
-    // };
+    // }
 
     const columns = [
         {
@@ -176,11 +189,10 @@ const GetAllRoomsPage: React.FC = () => {
             render: (_: any, record: any) => (
                 <Space size="large">
                     <Button type="link" onClick={() => handleEdit(record)}>Sửa</Button>
-                    {/* <Button type="link" danger onClick={() => handleDelete(record)}>Xóa</Button> */}
                 </Space>
             ),
         },
-    ];
+    ]
 
     return (
         <>
@@ -199,7 +211,7 @@ const GetAllRoomsPage: React.FC = () => {
                         allowClear
                     />
                     <Button type="primary" onClick={handleSearch}>Tìm</Button>
-                    <Button onClick={() => { setNameSearch(''); fetchData(); }} className="rounded-lg">Đặt lại</Button>
+                    <Button onClick={() => { setNameSearch(''); fetchData() }} className="rounded-lg">Đặt lại</Button>
                 </Space.Compact>
                 </div>
                 {/* <Table
@@ -238,26 +250,19 @@ const GetAllRoomsPage: React.FC = () => {
                         rules={[
                             { required: true, message: 'Vui lòng nhập đường dẫn hình ảnh!' },
                             { type: 'url', message: 'Đường dẫn không hợp lệ!' },
-                            // {
-                            //     validator: (_, value) => {
-                            //         if (!value || value.match(/\.(jpeg|jpg|gif|png)$/)) {
-                            //             return Promise.resolve();
-                            //         }
-                            //         return Promise.reject(new Error('URL phải là hình ảnh (jpeg, jpg, gif, png)'));
-                            //     }
-                            // }
                         ]}
                     >
                         <Input
-                            placeholder="Nhập đường dẫn hình ảnh" 
-                            // className="rounded-lg"
+                            placeholder="Nhập đường dẫn hình ảnh"
+                            onChange={handleUrlChange}
                         />
-                        {form.getFieldValue('url') && (
+                        {(previewUrl || form.getFieldValue('url')) && (
                             <div style={{ marginTop: 16 }}>
                             <Image
+                                key={`preview-${previewKey}`} // Sử dụng key để force reload ảnh
                                 width={200}
                                 height={150}
-                                src={form.getFieldValue('url')}
+                                src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`} // Thêm query string để tránh cache
                                 alt="Preview"
                                 style={{ 
                                     objectFit: 'cover',
@@ -276,7 +281,15 @@ const GetAllRoomsPage: React.FC = () => {
                                         Đang tải ảnh...
                                     </div>
                                 }
+                                fallback="https://via.placeholder.com/200x150?text=Không+thể+tải+ảnh"
                             />
+                            <Button 
+                                type="link" 
+                                onClick={() => setPreviewKey(prev => prev + 1)}
+                                style={{ marginTop: 8 }}
+                            >
+                                Tải lại ảnh
+                            </Button>
                             </div>
                         )}
                     </Form.Item>
@@ -331,7 +344,7 @@ const GetAllRoomsPage: React.FC = () => {
                 </Form>
             </Modal>
         </>
-    );
-};
+    )
+}
 
 export default GetAllRoomsPage
