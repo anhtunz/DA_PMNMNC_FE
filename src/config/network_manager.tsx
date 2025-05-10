@@ -7,7 +7,6 @@ class NetworkManager {
   private axiosInstance: AxiosInstance
 
   private constructor() {
-    const token = cookieStorage.getItem(ApplicationConstants.TOKEN)
     this.axiosInstance = axios.create({
       baseURL: `${ApplicationConstants.DOMAIN}`,
       headers: {
@@ -18,11 +17,16 @@ class NetworkManager {
           'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-        ...(token && token !== '' ? { Authorization: `Bearer ${token}` } : {})
       }
     })
+    this.axiosInstance.interceptors.request.use((config) => {
+      const token = cookieStorage.getItem(ApplicationConstants.TOKEN)
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`
+      }
+      return config
+    })
   }
-
   static get instance(): NetworkManager {
     if (!this._instance) {
       this._instance = new NetworkManager()
@@ -44,7 +48,7 @@ class NetworkManager {
       })
       return response
     } catch (error: any) {
-      return error.response
+      throw error.response
     }
   }
 
@@ -64,7 +68,7 @@ class NetworkManager {
       })
       return response
     } catch (error: any) {
-      return error.response
+      throw error.response
     }
   }
 
@@ -115,10 +119,9 @@ class NetworkManager {
       const response = await this.axiosInstance.put(path, body, {
         validateStatus: (status) =>   status === 200
       })
-      return response.status
+      return response
     } catch (error: any) {
       throw error.response
-      // return error.response
     }
   }
 
@@ -134,7 +137,7 @@ class NetworkManager {
       const response = await this.axiosInstance.delete(path, {
         validateStatus: (status) => status === 200
       })
-      return response.status
+      return response
     } catch (error: any) {
       throw error.response
     }

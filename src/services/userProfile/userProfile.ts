@@ -1,4 +1,4 @@
-// // import { post } from '../../config/axios'
+// import { post } from '../../config/axios'
 // import { NetworkManager} from '../../config/network_manager'
 // import APIPathConstants from '../../constant/ApiPathConstants'
 
@@ -105,10 +105,10 @@ export const updateAvatar = async (imageFile: File) => {
   try {
     const formData = new FormData()
     formData.append('image', imageFile)
-    
+
     // For file uploads, we need to use multipart/form-data
     const token = cookieStorage.getItem(ApplicationConstants.TOKEN)
-    
+
     // Create a custom axios instance for this specific request
     const response = await axios.post(
       `${ApplicationConstants.DOMAIN}/${APIPathConstants.UPDATE_AVATAR}`,
@@ -120,7 +120,7 @@ export const updateAvatar = async (imageFile: File) => {
         }
       }
     )
-    
+
     console.log('Avatar upload response:', response)
     return response
   } catch (error) {

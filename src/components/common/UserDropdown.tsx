@@ -66,8 +66,8 @@ const UserDropdown = () => {
             onClick={toggleDropdown}
             className='flex items-center text-gray-700 dropdown-toggle dark:text-gray-400'
           >
-            <span className='mr-3 overflow-hidden rounded-full h-11 w-11'>
-              <img src={user?.avatar || 'https://ui-avatars.com/api/?background=0D8ABC&color=fff'} alt='User' />
+            <span className='mr-3 flex items-center overflow-hidden rounded-full h-11 w-11'>
+              <img className='object-cover' src={user?.avatar || 'https://ui-avatars.com/api/?background=0D8ABC&color=fff'} alt='User' />
             </span>
 
             <span className='block mr-1 font-medium text-theme-sm max-md:hidden'>{user && user.name}</span>

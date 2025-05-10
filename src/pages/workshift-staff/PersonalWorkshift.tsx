@@ -3,15 +3,13 @@ import { useEffect, useState } from 'react'
 import { formatDateByDMY } from '../../components/helpers/formatNowDate'
 import RangeCalendarComponent from '../../components/common/RangeCalendar'
 import Filter from '../../components/common/Filter'
-import getUserShiftHistory from '../../services/userShift/userShiftHistoryService'
 import useUserStore from '../../stores/userStore'
 import useCappedDateRange from '../../hooks/useCappedDateRange'
-import { Spin } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { Skeleton } from 'antd'
 import EmptyData from '../../components/common/EmptyData'
-
+import getPersonalShiftHistory from '../../services/history-shift/personalShiftHistoryService'
 interface ShiftDetail {
-  id: string;
+  name: string;
   timeStart: string;
   timeEnd: string;
 }
@@ -49,7 +47,7 @@ const PersonalWorkshift = () => {
       setOpen(false)
       const startDate = rangeDate.startDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
       const endDate = rangeDate.endDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
-      const response = await getUserShiftHistory(startDate, endDate)
+      const response = await getPersonalShiftHistory(startDate, endDate)
       const data = Array.isArray(response.data.data) ? response.data.data : [];
       setHistoryShiftPersonalUser(data)
     } catch (error) {
@@ -65,41 +63,39 @@ const PersonalWorkshift = () => {
 
   return (
     <>
-      {loading && (
-        <Spin fullscreen indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-      )}
+      <div className='w-full flex justify-end items-center gap-3 pb-3'>
+        <span className='font-bold'>Ngày hôm nay: {`${nowFormatDMY}`}</span>
+        <Filter open={open} setOpen={setOpen} loading={loading} handleApi={handleCallApi}>
+          <div className='flex flex-col gap-2 w-full'>
+            <span className='font-bold'>Chọn thời gian</span>
+            <RangeCalendarComponent
+              startDate={rangeDate.startDate?.format('YYYY-MM-DD') || undefined}
+              endDate={rangeDate.endDate?.format('YYYY-MM-DD') || undefined}
+              isDisableLastDay={false}
+              onChange={onChange}
+            />
+          </div>
+        </Filter>
+      </div>
+
       <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
-        <div className='w-full flex justify-end items-center gap-3 pb-3'>
-          <span className='font-bold'>Ngày hôm nay: {`${nowFormatDMY}`}</span>
-          <Filter open={open} setOpen={setOpen} loading={loading} handleApi={handleCallApi}>
-            <div className='flex flex-col gap-2 w-full'>
-              <span className='font-bold'>Chọn thời gian</span>
-              <RangeCalendarComponent
-                startDate={rangeDate.startDate?.format('YYYY-MM-DD') || undefined}
-                endDate={rangeDate.endDate?.format('YYYY-MM-DD') || undefined}
-                isDisableLastDay={false}
-                onChange={onChange}
-              />
-            </div>
-          </Filter>
-        </div>
         <div className='flex flex-col gap-6 '>
           <div className='flex flex-row items-center gap-4'>
-            <img className='rounded-full size-8 object-cover' src={user?.avatar || 'https://ui-avatars.com/api/?background=0D8ABC&color=fff'} alt="Ảnh đại diện" />
+            <img className='rounded-full size-8 object-cover' src={user?.avatar} alt="Ảnh đại diện" />
             <span className='font-bold'>{user?.name}</span>
             <span className='font-bold'>({user?.email})</span>
           </div>
-          {loading ? null : historyShiftPersonalUser.length === 0 ? (
+          {loading ? <Skeleton active /> : historyShiftPersonalUser.length === 0 ? (
             <EmptyData styleCss='h-[350px]' />
           ) : (
             historyShiftPersonalUser.map((shift, key) => (
               <div className='flex flex-col gap-4 border bg-gray-25 rounded-xl p-5' key={key}>
                 <div className='flex flex-col gap-3'>
                   <span className='font-bold italic'>Ngày {dayjs(shift.dayRegis).format('DD-MM-YYYY')}</span>
-                  {shift.data.map((detail, i) => (
-                    <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={i}>
+                  {Object.values(shift.data).map((detail, key) => (
+                    <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={key}>
                       <div className='flex flex-col gap-2'>
-                        <span className='font-bold text-blue-400'>ID Shift: {detail.id}</span>
+                        <span className='font-bold text-blue-400'>{detail.name}</span>
                         <span className='text-gray-500'>
                           Thời gian: {detail.timeStart} - {detail.timeEnd}
                         </span>

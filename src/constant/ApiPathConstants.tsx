@@ -12,6 +12,7 @@ class APIPathConstants {
 
   //quản lý ca làm
   static readonly GET_USER_SHIFT_HISTORY = 'user-shift-history/get-all'
+  static readonly GET_ALL_STAFF_SHIFT_HISTORY = 'user-shift-management/get-all'
 
   // Quan ly users (ADMIN or SUPERADMIN)
   static readonly ADMIN_BLOCK_OR_UNBLOCK_USER = 'admin/users/block'
@@ -24,11 +25,16 @@ class APIPathConstants {
   static readonly ADMIN_GET_ALL_SHiFTS = 'admin/shifts'
   static readonly GET_USER_SHIFTS = 'user-register-shift/get-all-shift'
   static readonly USER_REGISTER_SHIFT = 'user-register-shift/subscribe-or-unsubscribe-shift'
+  static readonly GET_ALL_USER_REGISTERED_SHIFTS = 'user-register-shift/get-all-user-shift'
 
   // Quản lý ca làm việc
   static readonly GET_ALL_USER_SHIFTS = 'consider-user-shift/get-all'
   static readonly ACCEPT_USER_SHIFT = 'consider-user-shift/accept-user-shift'
   static readonly DENY_USER_SHIFT = 'consider-user-shift/deny-user-shift'
+
+   // Quản lý dịch vụ (service)
+   static readonly SERVICE_LIST = 'service/get-all-service';
+   static readonly SERVICE_CREATE_OR_UPDATE = 'service/create-or-update-service';
 }
 
 export default APIPathConstants
