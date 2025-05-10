@@ -20,6 +20,7 @@ import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
 import ServiceManager from '../pages/ServiceManager/ServiceManager'
 import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
+import GetRoomsForStaffPage from '../pages/RoomManagement/getAllRoomsForStaff'
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
       { path: 'personal-workshift-history', element: <PersonalWorkshift /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'shift-registration', element: <ShiftRegistration /> },
+      { path: 'list-of-rooms-for-staff', element: <GetRoomsForStaffPage /> },
 
       // ADMIN ROUTES
       {

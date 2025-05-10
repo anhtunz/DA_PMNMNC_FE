@@ -59,6 +59,11 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         key: ApplicationConstants.SHIFT_REGISTRATION_PATH,
         label: 'Đăng ký ca làm',
         icon: <ClockCircleOutlined />
+      },
+      {
+        key: '/list-of-rooms-for-staff',
+        label: 'Danh sách phòng',
+        icon: < HomeFilled/>
       }
     )
   }
