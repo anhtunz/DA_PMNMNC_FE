@@ -1,7 +1,7 @@
-import { ClockCircleOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, HomeFilled, PieChartOutlined, UserOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ApplicationConstants from '../../constant/ApplicationConstant'
 import { useAuth } from '../../context/AuthContext'
@@ -78,10 +78,14 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
         label: 'Quản lý ca làm',
         icon: <ClockCircleOutlined />,
         children: [
-          { key: '/add-shift', label: 'Thêm ca làm mới' },
           { key: '/list-of-shifts', label: 'Danh sách ca làm' },
           { key: '/workshift-staff', label: 'Duyệt ca làm' },
         ]
+      },
+      {
+        key: '/list-of-rooms',
+        label: 'Quản lý phòng',
+        icon: < HomeFilled/>
       },
       {
         key: '/service-manager',
