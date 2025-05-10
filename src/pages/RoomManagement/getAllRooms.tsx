@@ -139,9 +139,6 @@ const GetAllRoomsPage: React.FC = () => {
   const handleCreate = () => {
     setEditingRoom(null)
     form.resetFields()
-    form.setFieldsValue({
-      isActive: false
-    })
     setPreviewUrl('')
     setIsModalOpen(true)
   }
@@ -163,7 +160,8 @@ const GetAllRoomsPage: React.FC = () => {
       const values = await form.validateFields()
       const body = {
         ...values,
-        id: editingRoom ? editingRoom?.id : null
+        id: editingRoom ? editingRoom?.id : null,
+        isActive: editingRoom ? values.isActive : true
       }
       const response = await createOrUpdateRoom(body)
       if (!response) {
