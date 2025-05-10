@@ -4,9 +4,14 @@ import { NetworkManager } from "../../config/network_manager"
 import TableComponent from "../../components/common/TableComponent" 
 import dayjs from 'dayjs' 
 import TextArea from "antd/es/input/TextArea"
-import ShiftService, { Shift } from '../../services/shift/shiftService';
 import { toastService } from "../../services/toast/ToastService";
 
+interface Shift {
+  name: string;
+  description: string;
+  time_start: string;
+  time_end: string;
+}
 
 const GetAllShiftsPage: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -20,12 +25,12 @@ const GetAllShiftsPage: React.FC = () => {
     setIsModalOpen(false)
     try {
       // Gọi API Get All
-      const response = await ShiftService.getAllShifts();
+      const response = await NetworkManager.instance.getDataFromServer('admin/shifts')
       if (!response) {
           console.error('Response is undefined')
           return
       }
-      setShifts(response.data);
+      setShifts(response.data.data);
       setLoading(false);
     } catch (error) {
         console.log(error)

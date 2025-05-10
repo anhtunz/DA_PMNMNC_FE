@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, InputNumber, Modal, Select, Space, Tag } from "antd"
+import { Button, Card, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Tag, Image } from "antd"
 import React, { useEffect, useState } from "react"
 import { NetworkManager } from "../../config/network_manager"
 import { toastService } from "../../services/toast/ToastService"
@@ -15,6 +15,7 @@ interface Room {
     type: string;
     price: number;
     isActive: boolean;
+    url: string;
 }
 
 const GetAllRoomsPage: React.FC = () => {
@@ -113,6 +114,14 @@ const GetAllRoomsPage: React.FC = () => {
             key: 'name',
             defaultSortOrder: 'ascend' as const,
             sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+        },
+        {
+            title: 'Hình ảnh',
+            dataIndex: 'url',
+            key: 'url',
+            render: (text: any) => (
+                <img src={text} alt="Room" style={{ width: '75px', height: '75px', borderRadius: '8px' }} />
+            ),
         },
         {
             title: 'Mô tả',
@@ -224,6 +233,55 @@ const GetAllRoomsPage: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
+                        name="url"
+                        label="Hình ảnh"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập đường dẫn hình ảnh!' },
+                            { type: 'url', message: 'Đường dẫn không hợp lệ!' },
+                            // {
+                            //     validator: (_, value) => {
+                            //         if (!value || value.match(/\.(jpeg|jpg|gif|png)$/)) {
+                            //             return Promise.resolve();
+                            //         }
+                            //         return Promise.reject(new Error('URL phải là hình ảnh (jpeg, jpg, gif, png)'));
+                            //     }
+                            // }
+                        ]}
+                    >
+                        <Input
+                            placeholder="Nhập đường dẫn hình ảnh" 
+                            // className="rounded-lg"
+                        />
+                        {form.getFieldValue('url') && (
+                            <div style={{ marginTop: 16 }}>
+                            <Image
+                                width={200}
+                                height={150}
+                                src={form.getFieldValue('url')}
+                                alt="Preview"
+                                style={{ 
+                                    objectFit: 'cover',
+                                    borderRadius: 4,
+                                    border: '1px solid #d9d9d9'
+                                }}
+                                placeholder={
+                                    <div style={{ 
+                                        width: 200, 
+                                        height: 150, 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        backgroundColor: '#f0f0f0'
+                                    }}>
+                                        Đang tải ảnh...
+                                    </div>
+                                }
+                            />
+                            </div>
+                        )}
+                    </Form.Item>
+
+                    <Form.Item
                         name="description"
                         label="Mô tả"
                         rules={[
@@ -265,26 +323,9 @@ const GetAllRoomsPage: React.FC = () => {
                         label="Trạng thái"
                         valuePropName="checked"
                     >
-                        <Select className="rounded-lg" placeholder="Chọn trạng thái" >
-                            <Select.Option value={true}>
-                                <Tag
-                                    color='darkred'
-                                    style={{ color: 'white', fontWeight: 'bold' }}
-                                    className="rounded-lg"
-                                >
-                                        Đã đặt
-                                </Tag>
-                            </Select.Option>
-                            <Select.Option value={false}>
-                            <Tag
-                                    color='lightgreen'
-                                    style={{ color: 'brown', fontWeight: 'bold' }}
-                                    className="rounded-lg"
-                                >
-                                        Có sẵn
-                                </Tag>
-                            </Select.Option>
-                        </Select>
+                        <Checkbox>
+                            Đã đặt
+                        </Checkbox>
                     </Form.Item>
                     {/* )}*/}
                 </Form>
