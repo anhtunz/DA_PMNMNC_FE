@@ -1107,29 +1107,35 @@ const WorkshiftStaffPage = () => {
     return null
   }
 
-//   useEffect(() => {
-//   setLoading(true)
-//   Promise.all([fetchUsers(), fetchShifts()])
-//     .then(() => setLoading(false))
-// }, [])
+  useEffect(() => {
+  setLoading(true);
+  Promise.all([fetchUsers(), fetchShifts()])
+    .then(() => {
+      // Add a delay to simulate longer loading time
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000); // You can adjust the delay (in milliseconds) as needed
+    });
+}, []);
 
 
-// useEffect(() => {
-//   if (users.length > 0 && shifts.length > 0) {
-//     fetchUserShifts()
-//   }
-// }, [users, shifts])
 useEffect(() => {
-  const loadData = async () => {
-    setLoading(true)
-    await fetchUsers()
-    await fetchShifts()
-    await fetchUserShifts()
-    setLoading(true)
-    setLoading(false)
+  if (users.length > 0 && shifts.length > 0) {
+    fetchUserShifts()
   }
-  loadData()
-}, [])
+}, [users, shifts])
+// useEffect(() => {
+//   const loadData = async () => {
+//     setLoading(true)
+//     await fetchUsers()
+//     await fetchShifts()
+//     await fetchUserShifts()
+//     setLoading(true)
+//     setLoading(false)
+//   }
+//   setLoading(false)
+//   loadData()
+// }, [])
 
 
 
