@@ -36,7 +36,7 @@ const GetAllRoomsPage: React.FC = () => {
     customRequest: async (options: any) => {
       const { file, onSuccess, onError } = options
       try {
-        setLoading(true)
+        // setLoading(true)
         const formData = new FormData()
 
         formData.append('image', file)
@@ -66,8 +66,6 @@ const GetAllRoomsPage: React.FC = () => {
         console.error('Upload error:', error)
         onError(error)
         toastService.error('Tải lên ảnh thất bại: ' + (error.response?.data?.message || error.message))
-      } finally {
-        setLoading(false)
       }
     },
     beforeUpload: (file: File) => {
