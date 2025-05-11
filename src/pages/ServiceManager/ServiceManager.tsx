@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Table, Input, Space, Image, Checkbox, notification, Form, Alert } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Modal, Table, Input, Space, Image, Checkbox, notification, Form, Alert, Upload } from 'antd';
+import { InboxOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/es/table';
 import { getAllServices, createOrUpdateService } from '../../services/service/serviceService';
+import { uploadImage } from '../../services/uploadImage/uploadImageService';
+import { toastService } from '../../services/toast/ToastService';
 
 interface Service {
   id: string;
@@ -33,6 +35,7 @@ const ServiceManager: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('')
   const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
     price: 0,
@@ -43,7 +46,90 @@ const ServiceManager: React.FC = () => {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [previewKey, setPreviewKey] = useState(0) // Thêm key để force update
   const [form] = Form.useForm();
+
+  const { Dragger } = Upload;
+
+  const uploadProps = {
+      name: 'file',
+      multiple: false,
+      showUploadList: false,
+      customRequest: async (options: any) => {
+        const { file, onSuccess, onError } = options
+        try {
+          const formData = new FormData()
+  
+          formData.append('image', file)
+  
+          // Debug: Kiểm tra FormData trước khi gửi
+          console.log('File to upload:', file)
+          for (let [key, value] of formData.entries()) {
+            console.log(key, value)
+          }
+  
+          const response = await uploadImage(formData)
+          
+          if (response?.data?.data?.url) {
+            onSuccess({
+              url: response.data.data.url
+            }, file)
+          
+            // Cập nhật form và preview
+            form.setFieldsValue({ url: response.data.data.url })
+            setPreviewUrl(response.data.data.url)
+            toastService.success('Tải lên ảnh thành công')
+          } else {
+            throw new Error('Không nhận được URL từ API')
+          }
+  
+        } catch (error: any) {
+          console.error('Upload error:', error)
+          onError(error)
+          toastService.error('Tải lên ảnh thất bại: ' + (error.response?.data?.message || error.message))
+        }
+      },
+      beforeUpload: (file: File) => {
+        // Danh sách loại file cho phép
+        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+        // Kích thước tối đa cho phép (5MB)
+        const MAX_SIZE_MB = 5
+        const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024 // 5MB
+  
+        // Kiểm tra theo thứ tự ưu tiên
+        const validations = [
+          {
+            condition: !(file instanceof File),
+            message: 'Dữ liệu upload không hợp lệ',
+            returnValue: false
+          },
+          {
+            condition: !file.type.startsWith('image/'),
+            message: 'Chỉ được tải lên file ảnh!',
+            returnValue: Upload.LIST_IGNORE
+          },
+          {
+            condition: file.size > MAX_SIZE,
+            message: `Ảnh phải nhỏ hơn ${MAX_SIZE_MB}MB!`,
+            returnValue: Upload.LIST_IGNORE
+          },
+          {
+            condition: !ALLOWED_TYPES.includes(file.type),
+            message: 'Chỉ chấp nhận ảnh JPG/PNG/WEBP',
+            returnValue: Upload.LIST_IGNORE
+          }
+        ];
+  
+        // Tìm lỗi đầu tiên
+        const error = validations.find(v => v.condition)
+        if (error) {
+          toastService.error(error.message)
+          return error.returnValue
+        }
+  
+        return true
+      },
+    }
 
   useEffect(() => {
     fetchServices();
@@ -92,6 +178,7 @@ const ServiceManager: React.FC = () => {
     setErrorMessage(null);
     setEditingServiceId(null);
     form.resetFields();
+    setPreviewUrl('')
     setIsModalOpen(true);
   };
 
@@ -101,6 +188,7 @@ const ServiceManager: React.FC = () => {
     setErrorMessage(null);
     setEditingServiceId(service.id);
     form.setFieldsValue(service);
+    setPreviewUrl(service.url || '')
     setIsModalOpen(true);
   };
 
@@ -136,14 +224,14 @@ const ServiceManager: React.FC = () => {
       }
     }
 
-    // Validate url
-    if (!formData.url.trim()) {
-      newErrors.url = "Link ảnh không được để trống.";
-      isValid = false;
-    } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(formData.url)) {
-      newErrors.url = "Link ảnh không hợp lệ. Vui lòng nhập URL hình ảnh đúng định dạng (.jpg, .jpeg, .png, .gif).";
-      isValid = false;
-    }
+    // // Validate url
+    // if (!formData.url.trim()) {
+    //   newErrors.url = "Link ảnh không được để trống.";
+    //   isValid = false;
+    // } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(formData.url)) {
+    //   newErrors.url = "Link ảnh không hợp lệ. Vui lòng nhập URL hình ảnh đúng định dạng (.jpg, .jpeg, .png, .gif).";
+    //   isValid = false;
+    // }
 
     // Validate price
     if (formData.price <= 0) {
@@ -164,7 +252,7 @@ const ServiceManager: React.FC = () => {
     }
 
     const payload = editingServiceId
-      ? { ...formData, id: editingServiceId }
+      ? { ...formData, id: editingServiceId, url: form.getFieldValue('url') }
       : formData;
 
     try {
@@ -387,7 +475,7 @@ const ServiceManager: React.FC = () => {
                 />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 label={<span>Link ảnh <span style={{ color: 'red' }}>*</span></span>}
                 validateStatus={errors.url ? 'error' : ''}
                 help={errors.url}
@@ -399,6 +487,58 @@ const ServiceManager: React.FC = () => {
                   placeholder="Nhập URL hình ảnh (.jpg, .jpeg, .png, .gif)"
                   status={errors.url ? 'error' : ''}
                 />
+              </Form.Item> */}
+
+              <Form.Item
+                name="url"
+                label="Hình ảnh"
+                rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}
+              >
+                <Dragger {...uploadProps}>
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Kéo thả ảnh vào đây hoặc click để chọn</p>
+                  <p className="ant-upload-hint">
+                    Hỗ trợ tải lên 1 ảnh duy nhất. Dung lượng tối đa 5MB
+                  </p>
+                </Dragger>
+                
+                {(previewUrl || form.getFieldValue('url')) && (
+                  <div style={{ marginTop: 16 }}>
+                    <Image
+                      key={`preview-${previewKey}`} // Thêm key để force reload
+                      width={200}
+                      src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`} // Thêm query string để chống cache
+                      alt="Preview"
+                      style={{ 
+                        objectFit: 'cover',
+                        borderRadius: 6,
+                        border: '1px solid #d9d9d9'
+                      }}
+                      placeholder={
+                        <div style={{ 
+                          width: 200, 
+                          height: 150, 
+                          display: 'flex',
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          backgroundColor: '#f0f0f0'
+                        }}>
+                          Đang tải ảnh...
+                        </div>
+                      }
+                      fallback="https://via.placeholder.com/200x150?text=Không+thể+tải+ảnh"
+                    />
+                    <Button 
+                      type="link" 
+                      onClick={() => setPreviewKey(prev => prev + 1)}
+                      style={{ marginTop: 8, marginLeft: 8 }}
+                    >
+                      Tải lại ảnh
+                    </Button>
+                  </div>
+                )}
               </Form.Item>
 
               <Form.Item>
