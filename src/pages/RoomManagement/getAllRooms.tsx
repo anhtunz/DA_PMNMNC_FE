@@ -72,10 +72,10 @@ const GetAllRoomsPage: React.FC = () => {
     },
     beforeUpload: (file: File) => {
       // Danh sách loại file cho phép
-      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
       // Kích thước tối đa cho phép (5MB)
-      const MAX_SIZE_MB = 5;
-      const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024; // 5MB
+      const MAX_SIZE_MB = 5
+      const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024 // 5MB
 
       // Kiểm tra theo thứ tự ưu tiên
       const validations = [
@@ -102,13 +102,13 @@ const GetAllRoomsPage: React.FC = () => {
       ];
 
       // Tìm lỗi đầu tiên
-      const error = validations.find(v => v.condition);
+      const error = validations.find(v => v.condition)
       if (error) {
-        toastService.error(error.message);
-        return error.returnValue;
+        toastService.error(error.message)
+        return error.returnValue
       }
 
-      return true;
+      return true
     },
   }
 
@@ -332,20 +332,20 @@ const GetAllRoomsPage: React.FC = () => {
             {(previewUrl || form.getFieldValue('url')) && (
               <div style={{ marginTop: 16 }}>
                 <Image
-                  key={`preview-${previewKey}`}
+                  key={`preview-${previewKey}`} // Thêm key để force reload
                   width={200}
-                  src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`}
+                  src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`} // Thêm query string để chống cache
                   alt="Preview"
                   style={{ 
                     objectFit: 'cover',
-                    borderRadius: 4,
+                    borderRadius: 6,
                     border: '1px solid #d9d9d9'
                   }}
                   placeholder={
                     <div style={{ 
                       width: 200, 
                       height: 150, 
-                      display: 'flex', 
+                      display: 'flex',
                       alignItems: 'center', 
                       justifyContent: 'center',
                       backgroundColor: '#f0f0f0'
@@ -358,7 +358,7 @@ const GetAllRoomsPage: React.FC = () => {
                 <Button 
                   type="link" 
                   onClick={() => setPreviewKey(prev => prev + 1)}
-                  style={{ marginTop: 8 }}
+                  style={{ marginTop: 8, marginLeft: 8 }}
                 >
                   Tải lại ảnh
                 </Button>
@@ -372,7 +372,10 @@ const GetAllRoomsPage: React.FC = () => {
             label='Mô tả'
             rules={[
               { required: true, message: 'Vui lòng nhập mô tả!' },
-              { pattern: /^[a-zA-Z0-9\s\u00C0-\u1EF9]*$/, message: 'Không được chứa ký tự đặc biệt!' },
+              {
+                pattern: /^[^<>"']+$/,
+                message: 'Không được chứa các ký tự: < > " \' '
+              },
               { max: 100, message: 'Mô tả không được quá 100 ký tự!' }
             ]}
           >
