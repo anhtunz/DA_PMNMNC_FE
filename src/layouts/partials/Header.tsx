@@ -23,6 +23,13 @@ const Headers = ({
     token: { colorBgContainer }
   } = theme.useToken()
   const { user } = useUserStore()
+  const getGreeting = (): string => {
+    const currentHour = new Date().getHours()
+
+    if (currentHour < 12) return 'Chào buổi sáng'
+    if (currentHour < 18) return 'Chào buổi chiều'
+    return 'Chào buổi tối'
+  }
   return (
     <Header
       className='sticky z-1 w-full py-2 max-h-fit h-20 top-0 bg-white border-gray-600 flex items-center justify-between px-4'
@@ -53,10 +60,11 @@ const Headers = ({
       )}
 
       <h1
-        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${!expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
-          }`}
+        className={`text-2xl font-semibold whitespace-nowrap transition-all duration-300 ${
+          !expanded ? 'absolute left-1/2 -translate-x-1/2' : ''
+        }`}
       >
-        Good Morning, {user && user.name}!
+        {getGreeting()}, {user && user.name}!
       </h1>
       {expanded ? (
         <div className='flex items-center gap-5'>

@@ -15,7 +15,8 @@ const ForgetPassword = () => {
   const [isShowResetPassword, setIsShowResetPassword] = useState(false)
   const [isMatchOTP, setIsMatchOTP] = useState(false)
   const [deadline, setDeadline] = useState<number | null>(null)
-  const [isFinsh, setIsFinish] = useState(false)
+  const [isFinish, setIsFinish] = useState(false)
+  const [isEmailInputDisable, setIsEmailInputDisable] = useState(false)
   const [form] = Form.useForm()
   const onFinish = async (values: any) => {
     if (isShowOTP) {
@@ -57,6 +58,7 @@ const ForgetPassword = () => {
         closeButton: true,
         isLoading: false
       })
+      setIsEmailInputDisable(true)
     } catch (err: any) {
       console.error('Error sendMailForgotPassword: ', err)
       toastService.error(err)
@@ -219,7 +221,7 @@ const ForgetPassword = () => {
                   layout='vertical'
                 >
                   <Form.Item name='Email' label='Email: ' rules={[{ required: true, type: 'email' }]}>
-                    <Input placeholder='abc@gmail.com' />
+                    <Input placeholder='abc@gmail.com' disabled={isEmailInputDisable} />
                   </Form.Item>
                   {isShowOTP && (
                     <Form.Item
@@ -293,7 +295,7 @@ const ForgetPassword = () => {
                   <Form.Item>
                     <Button
                       icon={
-                        isFinsh ? (
+                        isFinish ? (
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
                             fill='none'
@@ -313,7 +315,7 @@ const ForgetPassword = () => {
                       type='primary'
                       htmlType='submit'
                     >
-                      {isFinsh ? 'Hoàn thành' : 'Tiếp tục'}
+                      {isFinish ? 'Hoàn thành' : 'Tiếp tục'}
                     </Button>
                   </Form.Item>
                 </Form>

@@ -62,7 +62,7 @@ const LoginPage = () => {
                       <Input
                         style={{ padding: '12px' }}
                         prefix={<UserOutlined className='pr-3' />}
-                        placeholder='Username'
+                        placeholder='Email'
                       />
                     </Form.Item>
 
@@ -77,17 +77,17 @@ const LoginPage = () => {
                         style={{ padding: '12px' }}
                         prefix={<LockOutlined className='pr-3' />}
                         type='password'
-                        placeholder='Password'
+                        placeholder='Mật khẩu'
                       />
                     </Form.Item>
                     <Flex justify='space-between' align='center'>
-                      <Link to={ApplicationConstants.FORGOT_PASSWORD_PATH}>Forgot password</Link>
+                      <Link to={ApplicationConstants.FORGOT_PASSWORD_PATH}>Quên mật khẩu?</Link>
                     </Flex>
 
                     <LoadingButton
                       htmlType='submit'
                       type='link'
-                      styleCss='mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'
+                      styleCss='mt-5 h-10 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'
                       loading={loading}
                     >
                       <UserAddOutlined />

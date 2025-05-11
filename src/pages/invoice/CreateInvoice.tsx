@@ -238,34 +238,48 @@ const InvoiceCreationForm: React.FC = () => {
 
   const handleCreateCustomerButton = async () => {
     setLoading(true)
-    const values = await form.validateFields()
+
+    let values
+    try {
+      values = await form.validateFields(['clientPhone', 'clientId', 'clientName'])
+    } catch (validationError) {
+      console.error('Validation failed:', validationError)
+      setLoading(false)
+      return
+    }
+
     console.log('Giá trị form:', values)
     console.log('Giá trị CCCD:', values.clientId)
     console.log('Giá trị name:', values.clientName)
     console.log('Giá trị Phone:', values.clientPhone)
+
     const body = {
       name: values.clientName,
       phone: values.clientPhone,
       CMND: values.clientId
     }
+
     try {
       const response = await NetworkManager.instance.createDataInServer(APIPathConstants.CREATE_CUSTOMER, body)
+      console.log('Response ', response)
 
       const newCustomer: Customer = {
-        id: response.data.data.id,
+        id: response.data.data,
         name: '',
         phone: '',
         credential: ''
       }
-      setLoading(false)
+
       setCustomer(newCustomer)
       setFieldDisable(true)
       setIsAddCustomerButtonOpen(false)
       toastService.success('Tạo mới người dùng thành công')
-      console.log('New customer: ', customer)
+      console.log('New customer: ', newCustomer)
     } catch (err: any) {
       console.error('Error fetching data:', err)
       toastService.error(err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -274,7 +288,7 @@ const InvoiceCreationForm: React.FC = () => {
     setLoading(true)
     try {
       // Validate tất cả các trường trong form
-      const values = await form.validateFields()
+      const values = await form.validateFields(['clientPhone', 'clientId', 'clientName'])
 
       // Thêm các kiểm tra bổ sung nếu cần
       if (customer === null) {

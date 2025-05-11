@@ -1,6 +1,6 @@
 import { Dropdown, MenuProps, Modal } from 'antd'
 import { useState } from 'react'
-import { LogoutOutlined, SettingOutlined } from '@ant-design/icons'
+import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
 import useUserStore from '../../stores/userStore'
 import { useNavigate } from 'react-router-dom'
 const UserDropdown = () => {
@@ -17,7 +17,7 @@ const UserDropdown = () => {
   }
   const handleLougout = () => {
     Modal.confirm({
-      title: 'Logout',
+      title: 'Thông báo',
       content: 'Bạn có chắc chắn muốn đăng xuất không?',
       okText: 'Đăng xuất',
       cancelText: 'Hủy',
@@ -39,8 +39,8 @@ const UserDropdown = () => {
     },
     {
       key: '2',
-      label: 'Profile',
-      extra: '⌘P',
+      label: 'Trang cá nhân',
+      icon: <UserOutlined />,
       onClick: () => handleMenuClick('2')
     },
     {
@@ -51,12 +51,6 @@ const UserDropdown = () => {
       onClick: handleLougout
 
     },
-    {
-      key: '4',
-      label: 'Settings',
-      icon: <SettingOutlined />,
-      extra: '⌘S'
-    }
   ]
   return (
     <div className=''>

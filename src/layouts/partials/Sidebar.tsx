@@ -1,9 +1,4 @@
-import {
-  ClockCircleOutlined,
-  EditOutlined,
-  FileAddOutlined,
-  HomeOutlined,
-  SolutionOutlined} from '@ant-design/icons'
+import { ClockCircleOutlined, EditOutlined, FileAddOutlined, HomeOutlined, SolutionOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -53,7 +48,7 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
   const roles = user?.roles || []
   const isAdmin = ['ADMIN', 'SUPERADMIN'].some((role) => roles.includes(role))
   const isEmployee = roles.includes('EMPLOYEE')
-  if (isEmployee && isAdmin) {
+  if (isEmployee || isAdmin) {
     items.push(
       {
         key: ApplicationConstants.CREATE_INVOICE_PATH,
