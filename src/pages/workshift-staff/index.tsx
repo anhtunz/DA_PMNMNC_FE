@@ -1107,11 +1107,31 @@ const WorkshiftStaffPage = () => {
     return null
   }
 
-  useEffect(() => {
-    fetchUsers();
-    fetchShifts();
-    fetchUserShifts();
-  }, []);
+//   useEffect(() => {
+//   setLoading(true)
+//   Promise.all([fetchUsers(), fetchShifts()])
+//     .then(() => setLoading(false))
+// }, [])
+
+
+// useEffect(() => {
+//   if (users.length > 0 && shifts.length > 0) {
+//     fetchUserShifts()
+//   }
+// }, [users, shifts])
+useEffect(() => {
+  const loadData = async () => {
+    setLoading(true)
+    await fetchUsers()
+    await fetchShifts()
+    await fetchUserShifts()
+    setLoading(true)
+    setLoading(false)
+  }
+  loadData()
+}, [])
+
+
 
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
