@@ -30,6 +30,7 @@ import AddServiceOrRoom from './component/AddServiceOrRoom'
 import { toastService } from '../../services/toast/ToastService'
 import { NetworkManager } from '../../config/network_manager'
 import APIPathConstants from '../../constant/ApiPathConstants'
+import { useTitle } from '../../hooks/useTitle'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
@@ -364,6 +365,7 @@ const InvoiceCreationForm: React.FC = () => {
     setIsModalOpen(false)
   }
 
+  useTitle('Thêm mới hoá đơn')
   return (
     <div className='p-4 lg:p-6'>
       <Form form={form} layout='vertical' onFinish={handleSubmit}>

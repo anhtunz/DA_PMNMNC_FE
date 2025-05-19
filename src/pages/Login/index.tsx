@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import useLoginHandler from '../../services/auth/loginHandler'
 import { LockOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
 import ApplicationConstants from '../../constant/ApplicationConstant'
+import { useTitle } from '../../hooks/useTitle'
 
 type FieldType = {
   email?: string
@@ -30,6 +31,8 @@ const LoginPage = () => {
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
+
+  useTitle('Đăng nhập')
   return (
     <>
       <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
@@ -93,7 +96,7 @@ const LoginPage = () => {
                       <UserAddOutlined />
                       Đăng nhập
                     </LoadingButton>
-                    
+
                   </Form>
                 </div>
               </div>

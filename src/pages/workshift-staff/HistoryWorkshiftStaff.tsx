@@ -10,6 +10,7 @@ import { getAllUser } from '../../services/userProfile/userManagementService'
 import getAllHistoryWorkshift from '../../services/history-shift/staffShiftHistoryService'
 import { Skeleton } from 'antd'
 import EmptyData from '../../components/common/EmptyData'
+import { useTitle } from '../../hooks/useTitle'
 
 interface ShiftDetail {
   dayRegis: string
@@ -95,6 +96,8 @@ const HistoryWorkshiftStaffPage = () => {
   useEffect(() => {
     handleCallApi()
   }, [])
+
+  useTitle('Lịch sử làm việc nhân viên')
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>

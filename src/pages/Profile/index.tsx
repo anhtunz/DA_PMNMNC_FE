@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react'
 import { Card, Tabs, message } from 'antd'
 import type { TabsProps } from 'antd'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../stores'
+import { useDispatch } from 'react-redux'
 import { getUserInfo } from '../../services/userProfile/userProfile'
 import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from '../../stores/slice/user/userProfileSlice'
 import PersonalInfoForm from './PersonalInfoForm'
 import ChangePasswordForm from './ChangePasswordForm'
 import AvatarUpload from './AvatarUpload'
+import { useTitle } from '../../hooks/useTitle'
 
 
 const ProfilePage: React.FC = () => {
   const dispatch = useDispatch()
-  const profile = useSelector((state: RootState) => state.profile)
   const [messageApi, contextHolder] = message.useMessage()
 
   useEffect(() => {
@@ -53,14 +52,15 @@ const ProfilePage: React.FC = () => {
     }
   ]
 
+  useTitle('Thông tin cá nhân')
   return (
     <div className="profile-page px-4 py-6">
       {contextHolder}
-      
+
       <Card className="w-full">
-        <Tabs 
-          defaultActiveKey="1" 
-          items={items} 
+        <Tabs
+          defaultActiveKey="1"
+          items={items}
           tabPosition="top"
           className="profile-tabs"
           type="card"

@@ -5,6 +5,7 @@ import TableComponent from '../../components/common/TableComponent'
 import { InboxOutlined } from '@ant-design/icons'
 import { createOrUpdateRoom, getAllRooms } from '../../services/room/roomService'
 import { uploadImage } from '../../services/uploadImage/uploadImageService'
+import { useTitle } from '../../hooks/useTitle'
 
 interface Room {
   id?: string
@@ -48,12 +49,12 @@ const GetAllRoomsPage: React.FC = () => {
         }
 
         const response = await uploadImage(formData)
-        
+
         if (response?.data?.data?.url) {
           onSuccess({
             url: response.data.data.url
           }, file)
-        
+
           // Cập nhật form và preview
           form.setFieldsValue({ url: response.data.data.url })
           setPreviewUrl(response.data.data.url)
@@ -251,6 +252,7 @@ const GetAllRoomsPage: React.FC = () => {
     }
   ]
 
+  useTitle('Quản lý phòng')
   return (
     <>
       <Card
@@ -293,7 +295,7 @@ const GetAllRoomsPage: React.FC = () => {
       <Modal
         title={editingRoom ? 'Cập nhật phòng' : 'Tạo phòng'}
         open={isModalOpen}
-        onCancel={() => {setIsModalOpen(false); form.resetFields()}}
+        onCancel={() => { setIsModalOpen(false); form.resetFields() }}
         onOk={handleSubmit}
         cancelText='Hủy'
         okText='Cập nhật'
@@ -326,7 +328,7 @@ const GetAllRoomsPage: React.FC = () => {
                 Hỗ trợ tải lên 1 ảnh duy nhất. Dung lượng tối đa 5MB
               </p>
             </Dragger>
-            
+
             {(previewUrl || form.getFieldValue('url')) && (
               <div style={{ marginTop: 16 }}>
                 <Image
@@ -334,17 +336,17 @@ const GetAllRoomsPage: React.FC = () => {
                   width={200}
                   src={`${previewUrl || form.getFieldValue('url')}?${previewKey}`} // Thêm query string để chống cache
                   alt="Preview"
-                  style={{ 
+                  style={{
                     objectFit: 'cover',
                     borderRadius: 6,
                     border: '1px solid #d9d9d9'
                   }}
                   placeholder={
-                    <div style={{ 
-                      width: 200, 
-                      height: 150, 
+                    <div style={{
+                      width: 200,
+                      height: 150,
                       display: 'flex',
-                      alignItems: 'center', 
+                      alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: '#f0f0f0'
                     }}>
@@ -353,8 +355,8 @@ const GetAllRoomsPage: React.FC = () => {
                   }
                   fallback="https://via.placeholder.com/200x150?text=Không+thể+tải+ảnh"
                 />
-                <Button 
-                  type="link" 
+                <Button
+                  type="link"
                   onClick={() => setPreviewKey(prev => prev + 1)}
                   style={{ marginTop: 8, marginLeft: 8 }}
                 >

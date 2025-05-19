@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Modal, Table, Input, Space, Image, Checkbox, notification, Form, Alert, Upload } from 'antd'
+import { Button, Modal, Table, Input, Space, Image, Checkbox, Form, Alert, Upload } from 'antd'
 import { InboxOutlined, SearchOutlined } from '@ant-design/icons'
 import { ColumnType } from 'antd/es/table'
 import { getAllServices, createOrUpdateService } from '../../services/service/serviceService'
 import { uploadImage } from '../../services/uploadImage/uploadImageService'
 import { toastService } from '../../services/toast/ToastService'
+import { useTitle } from '../../hooks/useTitle'
 
 interface Service {
   id: string
@@ -223,15 +224,6 @@ const ServiceManager: React.FC = () => {
       }
     }
 
-    // // Validate url
-    // if (!formData.url.trim()) {
-    //   newErrors.url = "Link ảnh không được để trống.";
-    //   isValid = false;
-    // } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(formData.url)) {
-    //   newErrors.url = "Link ảnh không hợp lệ. Vui lòng nhập URL hình ảnh đúng định dạng (.jpg, .jpeg, .png, .gif).";
-    //   isValid = false;
-    // }
-
     // Validate price
     if (formData.price <= 0) {
       newErrors.price = 'Giá phải là số dương.'
@@ -369,6 +361,7 @@ const ServiceManager: React.FC = () => {
     }
   ]
 
+  useTitle('Quản lý dịch vụ')
   return (
     <div className='min-h-screen bg-gray-100 py-10 px-4'>
       <div className='container mx-auto p-4 bg-white shadow-md rounded-lg'>

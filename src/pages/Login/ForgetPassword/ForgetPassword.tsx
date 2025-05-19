@@ -5,6 +5,7 @@ import { toastService } from '../../../services/toast/ToastService'
 import { NetworkManager } from '../../../config/network_manager'
 import APIPathConstants from '../../../constant/ApiPathConstants'
 import { useNavigate } from 'react-router-dom'
+import { useTitle } from '../../../hooks/useTitle'
 
 const { Countdown } = Statistic
 const ForgetPassword = () => {
@@ -101,11 +102,11 @@ const ForgetPassword = () => {
       number: 'Mã OTP là một số'
     }
   }
-  const onValuesChange = (changedValues: any, allValues: any) => {
+  const onValuesChange = (changedValues: any) => {
     if ('Email' in changedValues) {
       form
         .validateFields(['Email'])
-        .then(() => {})
+        .then(() => { })
         .catch(() => {
           setIsShowOTP(false)
         })
@@ -196,6 +197,7 @@ const ForgetPassword = () => {
     console.log('finished!')
   }
 
+  useTitle('Quên mật khẩu')
   return (
     <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
       <div className='max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1'>

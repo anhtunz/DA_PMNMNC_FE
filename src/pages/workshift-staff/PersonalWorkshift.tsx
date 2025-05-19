@@ -8,6 +8,7 @@ import useCappedDateRange from '../../hooks/useCappedDateRange'
 import { Skeleton } from 'antd'
 import EmptyData from '../../components/common/EmptyData'
 import getPersonalShiftHistory from '../../services/history-shift/personalShiftHistoryService'
+import { useTitle } from '../../hooks/useTitle'
 interface ShiftDetail {
   name: string;
   timeStart: string;
@@ -61,6 +62,7 @@ const PersonalWorkshift = () => {
     handleCallApi()
   }, [])
 
+  useTitle('Lịch sử làm việc cá nhân')
   return (
     <>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>

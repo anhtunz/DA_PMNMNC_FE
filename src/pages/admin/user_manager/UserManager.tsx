@@ -21,6 +21,7 @@ import { toastService } from '../../../services/toast/ToastService'
 import APIPathConstants from '../../../constant/ApiPathConstants'
 import { EllipsisOutlined, LoadingOutlined, PlusOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
 import useUserStore from '../../../stores/userStore'
+import { useTitle } from '../../../hooks/useTitle'
 
 const UsersManager = () => {
   const [users, setUsers] = useState([])
@@ -290,13 +291,13 @@ const UsersManager = () => {
   const getMenuItems = (record: any) => [
     isSuperAdmin
       ? {
-          label: (
-            <span onClick={() => handleActionTable({ record, key: '0' })}>
-              {record.isAdmin ? 'Hạ quyền' : 'Nâng quyền'}
-            </span>
-          ),
-          key: '0'
-        }
+        label: (
+          <span onClick={() => handleActionTable({ record, key: '0' })}>
+            {record.isAdmin ? 'Hạ quyền' : 'Nâng quyền'}
+          </span>
+        ),
+        key: '0'
+      }
       : null,
     {
       label: (
@@ -373,29 +374,6 @@ const UsersManager = () => {
     </button>
   )
 
-  // const handleChange: UploadProps['onChange'] = (info) => {
-  //   if (info.file.status === 'uploading') {
-  //     setLoading(true)
-  //     return
-  //   }
-
-  //   if (info.file.status === 'done') {
-  //     // Lấy URL từ response của server nếu server trả về URL
-  //     // const imageUrl = info.file.response.url;
-  //     // setImageUrl(imageUrl);
-
-  //     // Hoặc sử dụng getBase64 để hiển thị preview trước khi upload hoàn tất
-  //     getBase64(info.file.originFileObj as FileType, (url) => {
-  //       setLoading(false)
-  //       setImageUrl(url)
-  //     })
-  //   }
-
-  //   if (info.file.status === 'error') {
-  //     setLoading(false)
-  //     message.error('Upload image failed')
-  //   }
-  // }
   const handleChange: UploadProps['onChange'] = (info) => {
     const file = info.file.originFileObj as FileType
     if (file) {
@@ -487,6 +465,7 @@ const UsersManager = () => {
     }
   }
 
+  useTitle('Quản lý người dùng')
   return (
     <div className='block'>
       <div className='h-auto grid grid-cols-4 gap-4 items-center justify-center'>

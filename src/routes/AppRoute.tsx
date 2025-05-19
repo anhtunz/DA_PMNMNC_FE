@@ -6,7 +6,6 @@ import NotFound from '../pages/NotFound'
 import Unauthorized from '../pages/Unauthorized'
 import PublicRoute from './publicRoutes'
 import MainLayout from '../layouts/MainLayout'
-import EmployeePage from '../pages/Employees/EmployeePage'
 import WorkshiftStaffPage from '../pages/workshift-staff'
 import HistoryWorkshiftStaffPage from '../pages/workshift-staff/HistoryWorkshiftStaff'
 import ProtectedRoute from './protectedRoute'
@@ -15,7 +14,6 @@ import ShiftRegistration from '../pages/ShiftRegistration/ShiftRegistration'
 import UsersManager from '../pages/admin/user_manager/UserManager'
 import PersonalWorkshift from '../pages/workshift-staff/PersonalWorkshift'
 import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
-import NewLogin from '../pages/New Login/main'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
 
@@ -62,7 +60,6 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute requiredRoles={[ApplicationConstants.ADMIN_ROLE]} />,
         children: [
-          { path: 'employees', element: <EmployeePage /> },
           { path: 'workshift-staff', element: <WorkshiftStaffPage /> },
           { path: 'staff-workshift-history', element: <HistoryWorkshiftStaffPage /> },
           { path: 'users-manager', element: <UsersManager /> },
@@ -72,14 +69,6 @@ const router = createBrowserRouter([
         ]
       }
     ]
-  },
-  {
-    path: '/new-login',
-    element: (
-      <PublicRoute>
-        <NewLogin />
-      </PublicRoute>
-    )
   },
 
   // UNAUTHORIZED AND NOT FOUND ROUTE

@@ -14,7 +14,6 @@ interface InitialProps {
   value?: string | string[]
 }
 const SelectOption = ({ optionData, isMultiSelect, placeholder, customWidth, onChange }: InitialProps) => {
-  
   return (
     <Select
       showSearch

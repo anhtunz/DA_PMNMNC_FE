@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Button, Image, Modal, Skeleton, Tag } from 'antd'
+import { Button, Image, Skeleton, Tag } from 'antd'
 import { NetworkManager } from '../../config/network_manager'
 import APIPathConstants from '../../constant/ApiPathConstants'
 import { toastService } from '../../services/toast/ToastService'
 import UpdateRoom from './component/UpdateRoom'
 import { CreditCardOutlined, PlusOutlined } from '@ant-design/icons'
 import UpdateServices from './component/UpdateServices'
+import { useTitle } from '../../hooks/useTitle'
 type Room = {
   id: string
   name: string
@@ -86,14 +87,14 @@ const DashBoardPage = () => {
       toastService.error(err)
     }
   }
-
+  useTitle('Trang chủ')
   return isLoading ? (
     <Skeleton />
   ) : (
     <div className='flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-start'>
       {rooms.map((room) => (
         <div
-          
+
           key={room.id}
           className={`flex flex-col h-auto md:h-48 items-center border rounded-lg shadow-sm md:flex-row w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1rem)] hover:shadow-md transition-shadow duration-200 ${room.isAvailable ? 'cursor-default' : 'cursor-pointer'}`}
         >
@@ -169,9 +170,9 @@ const DashBoardPage = () => {
       )}
       {isServicesInRoom && (
         <UpdateServices
-            initialServices={isServicesInRoom}
-            isOpen={isUpdateServicesModalOpen}
-            setIsOpen={setIsUpdateServicesModalOpen} invoiceId={isServicesInRoomInvoiceID}        />
+          initialServices={isServicesInRoom}
+          isOpen={isUpdateServicesModalOpen}
+          setIsOpen={setIsUpdateServicesModalOpen} invoiceId={isServicesInRoomInvoiceID} />
       )}
     </div>
   )
