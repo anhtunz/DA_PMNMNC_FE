@@ -4,6 +4,8 @@ import { NetworkManager } from '../../config/network_manager'
 import APIPathConstants from '../../constant/ApiPathConstants'
 import { toastService } from '../../services/toast/ToastService'
 import UpdateRoom from './component/UpdateRoom'
+import { CreditCardOutlined, PlusOutlined } from '@ant-design/icons'
+import UpdateServices from './component/UpdateServices'
 type Room = {
   id: string
   name: string
@@ -16,7 +18,11 @@ type Room = {
 const DashBoardPage = () => {
   const [rooms, setRooms] = useState<Room[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
+  const [isConfirmPaymentlOpen, setIsConfirmPaymentlOpen] = useState(false)
+
+  const [isUpdateServicesModalOpen, setIsUpdateServicesModalOpen] = useState(false)
+  const [isServicesInRoom, setIsServicesInRoom] = useState([])
+  const [isServicesInRoomInvoiceID, setIsServicesInRoomInvoiceID] = useState()
   const [selectedRoomID, setSelectedRoomID] = useState<string | null>(null)
   const fetchData = async () => {
     setIsLoading(true)
@@ -61,7 +67,24 @@ const DashBoardPage = () => {
     console.log(formatDateTime(new Date()))
 
     setSelectedRoomID(room.id)
-    setIsServiceModalOpen(true)
+    setIsConfirmPaymentlOpen(true)
+  }
+
+  const handleUpdateServiceInRoomClick = async (roomID: string) => {
+    try {
+      const body = {
+        id: roomID,
+        datePayment: formatDateTime(new Date())
+      }
+      const response = await NetworkManager.instance.createDataInServer(APIPathConstants.GET_DETAIL_ROOM_USING, body)
+      console.log(response)
+      setIsServicesInRoom(response.data.data.services)
+      setIsServicesInRoomInvoiceID(response.data.data.invoice.id)
+      setIsUpdateServicesModalOpen(true)
+    } catch (err: any) {
+      console.error('Error fetching data:', err)
+      toastService.error(err)
+    }
   }
 
   return isLoading ? (
@@ -70,13 +93,9 @@ const DashBoardPage = () => {
     <div className='flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-start'>
       {rooms.map((room) => (
         <div
-          onClick={() => {
-            if (room.isAvailable == false) {
-              handleOnClickRom(room)
-            }
-          }}
+          
           key={room.id}
-          className={`flex flex-col h-70 md:h-48 items-center border rounded-lg shadow-sm md:flex-row w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1rem)] hover:bg-gray-100 ${room.isAvailable ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+          className={`flex flex-col h-auto md:h-48 items-center border rounded-lg shadow-sm md:flex-row w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1rem)] hover:shadow-md transition-shadow duration-200 ${room.isAvailable ? 'cursor-default' : 'cursor-pointer'}`}
         >
           <div className='w-full h-36 md:w-48 md:h-full'>
             <Image
@@ -92,25 +111,67 @@ const DashBoardPage = () => {
               style={{ objectFit: 'cover', width: '100%', height: '100%' }}
             />
           </div>
-          <div className='flex flex-col justify-between p-4 leading-normal flex-1'>
-            <h5 className='mb-2 text-xl font-bold tracking-tight text-gray-900 line-clamp-1'>
-              {room.name} - {room.type == '0' ? 'Đơn' : 'Đôi'}
-            </h5>
-            <p className='mb-3 font-normal text-gray-700 text-sm line-clamp-2'>{room.description}</p>
-            <Tag style={{ width: '100px' }} color={`${room.isAvailable ? '#87d068' : '#f50'} `}>
-              {room.isAvailable ? 'Đang hoạt động' : 'Đã được đặt'}
-            </Tag>
+
+          <div className='flex flex-col justify-between p-4 leading-normal flex-1 h-full'>
+            <div className='flex-1'>
+              <h5 className='mb-2 text-xl font-bold tracking-tight text-gray-900 line-clamp-1'>
+                {room.name} - {room.type == '0' ? 'Đơn' : 'Đôi'}
+              </h5>
+              <p className='mb-3 font-normal text-gray-700 text-sm line-clamp-2'>{room.description}</p>
+              <Tag color={room.isAvailable ? 'green' : 'red'} className='mb-2'>
+                {room.isAvailable ? 'Đang hoạt động' : 'Đã được đặt'}
+              </Tag>
+            </div>
+
+            {/* Action Buttons - Vertical layout */}
+            {!room.isAvailable && (
+              <div className='flex flex-col gap-2 mt-2 w-full'>
+                <Button
+                  type='default'
+                  size='small'
+                  icon={<PlusOutlined />}
+                  className='w-full'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleUpdateServiceInRoomClick(room.id)
+                    console.log('Add service for room:', room.id)
+                  }}
+                >
+                  Thêm dịch vụ
+                </Button>
+
+                <Button
+                  type='primary'
+                  size='small'
+                  icon={<CreditCardOutlined />}
+                  className='w-full'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleOnClickRom(room)
+                    console.log('Payment for room:', room.id)
+                  }}
+                >
+                  Thanh toán
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       ))}
       {selectedRoomID && (
         <UpdateRoom
           roomID={selectedRoomID}
-          isOpen={isServiceModalOpen}
-          setIsOpen={setIsServiceModalOpen}
+          isOpen={isConfirmPaymentlOpen}
+          setIsOpen={setIsConfirmPaymentlOpen}
           datePayment={formatDateTime(new Date())}
           onCallback={handleCallback}
         />
+      )}
+      {isServicesInRoom && (
+        <UpdateServices
+            initialServices={isServicesInRoom}
+            isOpen={isUpdateServicesModalOpen}
+            setIsOpen={setIsUpdateServicesModalOpen} invoiceId={isServicesInRoomInvoiceID}        />
       )}
     </div>
   )

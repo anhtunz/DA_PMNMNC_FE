@@ -53,6 +53,7 @@ class APIPathConstants {
   static readonly SEARCH_CUSTOMER = 'booking-management/find-customer'
   static readonly CREATE_CUSTOMER = 'booking-management/create-customer'
   static readonly BOOKING_ROOM = 'booking-management/booking-room'
+  static readonly UPDATE_SERVICES_INVOICE = '/booking-management/add-service-to-invoice'
 
   // Trang chủ
   static readonly GET_ALL_ROOM = 'booking-management/search-all-room'
