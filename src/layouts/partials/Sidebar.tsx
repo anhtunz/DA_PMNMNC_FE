@@ -123,7 +123,6 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
           </svg>
         )
       },
-
       {
         key: ApplicationConstants.USERS_MANAGER_PATH,
         label: ApplicationConstants.USERS_MANAGER_PATH_NAME,
