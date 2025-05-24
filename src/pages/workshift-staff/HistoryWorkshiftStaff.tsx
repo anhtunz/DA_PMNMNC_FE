@@ -8,8 +8,7 @@ import Filter from '../../components/common/Filter'
 import useCappedDateRange from '../../hooks/useCappedDateRange'
 import { getAllUser } from '../../services/userProfile/userManagementService'
 import getAllHistoryWorkshift from '../../services/history-shift/staffShiftHistoryService'
-import { Skeleton } from 'antd'
-import EmptyData from '../../components/common/EmptyData'
+import { Collapse, Skeleton, Tabs } from 'antd'
 import { useTitle } from '../../hooks/useTitle'
 
 interface ShiftDetail {
@@ -28,10 +27,12 @@ interface Shift {
   avatar: string
   shifts_by_day: ShiftDetail[]
 }
+
 const HistoryWorkshiftStaffPage = () => {
 
   const [users, setUsers] = useState<{ id: string; name: string }[]>([])
   const [userWorkshiftHistory, setUserWorkshiftHistory] = useState<Shift[]>([])
+
   const getUsersFromApi = async () => {
     try {
       const resposne = await getAllUser();
@@ -98,6 +99,29 @@ const HistoryWorkshiftStaffPage = () => {
   }, [])
 
   useTitle('Lịch sử làm việc nhân viên')
+
+  const renderShiftCollapseItems = (shifts_by_day: ShiftDetail[]) =>
+    shifts_by_day.map((detail, idx) => ({
+      key: String(idx),
+      label: (
+        <span className='font-bold italic'>
+          Ngày {dayjs(detail.dayRegis).format('DD-MM-YYYY')}
+        </span>
+      ),
+      children: (
+        <div className='grid grid-cols-3 gap-4 w-full'>
+          {detail.data.map((item, i) => (
+            <div className='flex flex-col gap-2 w-full p-3 bg-gray-100 hover:bg-gray-300 rounded-xl' key={i}>
+              <span className='font-bold text-blue-400'>{item.name}</span>
+              <span className='text-gray-500'>
+                Thời gian: {item.timeStart} - {item.timeEnd}
+              </span>
+            </div>
+          ))}
+        </div>
+      ),
+    }));
+
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
       <div className='w-full flex justify-end items-center gap-3 pb-3'>
@@ -120,38 +144,53 @@ const HistoryWorkshiftStaffPage = () => {
           </div>
         </Filter>
       </div>
-      <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
-        <div className='flex flex-col gap-6 '>
-          {loading ? <Skeleton active /> : userWorkshiftHistory.length === 0 ? (
-            <EmptyData styleCss='h-[350px]' />
-          ) : (
-            userWorkshiftHistory.map((shift, key) => (
-              <>
-                <div className='flex flex-row items-center gap-4'>
-                  <img className='rounded-full size-8 object-cover' src={shift.avatar} alt="Ảnh đại diện" />
-                  <span className='font-bold'>{shift.user_name}</span>
-                </div>
-                <div className='flex flex-col gap-4 border bg-gray-25 rounded-xl p-5' key={key}>
-                  <div className='flex flex-col gap-3'>
-                    {shift.shifts_by_day.length > 0 ? shift.shifts_by_day.map((detail, key) => (
-                      <div className='flex flex-col p-3 gap-5 items-start h-fit bg-gray-100 rounded-md' key={key}>
-                        <span className='font-bold italic'>Ngày {dayjs(detail.dayRegis).format('DD-MM-YYYY')}</span>
-                        {detail.data.map((item, key) => (
-                          <div className='flex flex-col gap-2 w-full p-3 hover:bg-gray-300 rounded-xl' key={key}>
-                            <span className='font-bold text-blue-400'>{item.name}</span>
-                            <span className='text-gray-500'>
-                              Thời gian: {item.timeStart} - {item.timeEnd}
-                            </span>
-                          </div>
-                        ))}
+      <div className='flex flex-col gap-4'>
+        <span className='font-semibold'>Danh sách lịch sử làm việc của nhân viên </span>
+        <Tabs
+          defaultActiveKey="0"
+          tabPosition={'left'}
+          style={{ height: 400, padding: '32px 16px' }}
+          className="shadow-lg rounded-md bg-gray-50"
+          items={
+            loading
+              ? [
+                {
+                  label: (
+                    <div className='flex flex-row items-center gap-4'>
+                      <Skeleton.Avatar active size="large" />
+                      <span className='font-bold'><Skeleton.Input style={{ width: 100 }} active size="small" /></span>
+                    </div>
+                  ),
+                  key: "loading",
+                  children: <Skeleton active />
+                }
+              ]
+              : userWorkshiftHistory.map((shift, index) => (
+                {
+                  label: (
+                    <div className='flex flex-row items-center gap-4 '>
+                      <img className='rounded-full size-8 object-cover' src={shift.avatar} alt="Ảnh đại diện" />
+                      <span className='font-bold'>{shift.user_name}</span>
+                    </div>
+                  ),
+                  key: String(index),
+                  children: (
+                    shift.shifts_by_day.length > 0 ? (
+                      <div className='max-h-[336px] overflow-auto'>
+                        <Collapse
+                          items={renderShiftCollapseItems(shift.shifts_by_day)}
+                          accordion
+                          className="bg-gray-300"
+                        />
                       </div>
-                    )) : <div>Không tìm thấy lịch sử</div>}
-                  </div>
-                </div>
-              </>
-            ))
-          )}
-        </div>
+                    ) : (
+                      <div>Không tìm thấy lịch sử</div>
+                    )
+                  )
+                }
+              ))
+          }
+        />
       </div>
     </div>
   )

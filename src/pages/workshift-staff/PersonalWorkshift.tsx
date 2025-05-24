@@ -94,16 +94,18 @@ const PersonalWorkshift = () => {
               <div className='flex flex-col gap-4 border bg-gray-25 rounded-xl p-5' key={key}>
                 <div className='flex flex-col gap-3'>
                   <span className='font-bold italic'>Ngày {dayjs(shift.dayRegis).format('DD-MM-YYYY')}</span>
-                  {Object.values(shift.data).map((detail, key) => (
-                    <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={key}>
-                      <div className='flex flex-col gap-2'>
-                        <span className='font-bold text-blue-400'>{detail.name}</span>
-                        <span className='text-gray-500'>
-                          Thời gian: {detail.timeStart} - {detail.timeEnd}
-                        </span>
+                  <div className='grid grid-cols-3 gap-3'>
+                    {Object.values(shift.data).map((detail, key) => (
+                      <div className='flex p-3 gap-5 items-center h-fit bg-gray-100 rounded-md' key={key}>
+                        <div className='flex flex-col gap-2'>
+                          <span className='font-bold text-blue-400'>{detail.name}</span>
+                          <span className='text-gray-500'>
+                            Thời gian: {detail.timeStart} - {detail.timeEnd}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))
