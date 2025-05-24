@@ -59,6 +59,13 @@ class APIPathConstants {
   static readonly GET_ALL_ROOM = 'booking-management/search-all-room'
   static readonly GET_DETAIL_ROOM_USING = 'booking-management/get-detail-room-using'
   static readonly CONFIRM_PAYMENT = 'booking-management/payment'
+  static readonly GET_LAST_MONTH_DATA = 'statitic-dashboard/get-last-month-comparison-figure'
+  static readonly GET_TOP_FIVE_SERVICES = 'statitic-dashboard/get-top-5-service-using-in-month'
+  static readonly GET_TOP_FIVE_ROOMS = 'statitic-dashboard/get-top-5-room-using-in-month'
+  static readonly GET_MONEY_BY_HOURS = 'statitic-dashboard/get-money-by-hour'
+  static readonly GET_MONEY_BY_WEEKS = 'statitic-dashboard/get-money-by-week'
+  static readonly GET_MONEY_BY_MONTHS = 'statitic-dashboard/get-money-by-month'
+  static readonly GET_ROOMS_USING = 'statitic-dashboard/get-data-room-using'
 } 
 
 export default APIPathConstants
