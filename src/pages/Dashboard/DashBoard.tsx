@@ -367,9 +367,9 @@ const DashBoardPage = () => {
           <h3 className='text-lg font-semibold text-gray-800 mb-4'>Tình trạng phòng hiện tại</h3>
           <DoughnutChart
             data={[
-              { label: 'Đang sử dụng', value: roomUsingData?.totalRoomUsing ?? 0, color: '#51f542' },
+              { label: 'Đang trống', value: roomUsingData?.totalRoomUsing ?? 0, color: '#51f542' },
               {
-                label: 'Đang trống',
+                label: 'Đang được sử dụng',
                 value: roomUsingData?.totalRoom! - roomUsingData?.totalRoomUsing!,
                 color: '#c3d0d6'
               }

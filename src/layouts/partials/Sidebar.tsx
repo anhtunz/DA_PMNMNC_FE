@@ -151,11 +151,11 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
       <Sider trigger={null} collapsible collapsed={collapsed} className='fixed top-0 left-0  max-md:hidden'>
         <div className='p-4 pb-2 flex justify-between items-center bg-white'>
           <img
-            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891268/DAPMNM/logoipsum-369_hkvytu.svg'
+            src='http://res.cloudinary.com/dkeclpsjq/image/upload/v1748093528/DAPMNM/gufw0luvn3ynsqasdhbz.jpg'
             className={`${!collapsed ? 'w-32' : 'w-0'}`}
           />
           <img
-            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891347/DAPMNM/logoipsum-370_rssaf5.svg'
+            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1748093499/DAPMNM/prp9btxxcbczirsvetgx.jpg'
             className={`${!collapsed ? 'w-0' : 'w-14'}`}
           />
         </div>
