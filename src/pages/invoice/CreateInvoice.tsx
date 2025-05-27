@@ -121,7 +121,7 @@ const InvoiceCreationForm: React.FC = () => {
     {
       title: '',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: any) => (
         <Button type='text' danger icon={<DeleteOutlined />} onClick={() => handleDeleteRoom()} />
       )
     }

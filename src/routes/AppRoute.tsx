@@ -17,13 +17,12 @@ import GetAllShiftsPage from '../pages/ShiftManagement/getAllShifts'
 import ForgetPassword from '../pages/Login/ForgetPassword/ForgetPassword'
 import ApplicationConstants from '../constant/ApplicationConstant'
 
-
 // import AddShiftPage from '../pages/ShiftManagement/addshift'
 import CreateInvoice from '../pages/invoice/CreateInvoice'
 
 import ServiceManager from '../pages/ServiceManager/ServiceManager'
 import GetAllRoomsPage from '../pages/RoomManagement/getAllRooms'
-
+import RoomRentalHistory from '../pages/superadmin/RoomRentalHistory'
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -67,6 +66,10 @@ const router = createBrowserRouter([
           { path: 'service-manager', element: <ServiceManager /> },
           { path: 'list-of-rooms', element: <GetAllRoomsPage /> }
         ]
+      },
+      {
+        element: <ProtectedRoute requiredRoles={[ApplicationConstants.SUPERADMIN_ROLE]} />,
+        children: [{ path: ApplicationConstants.ROOM_HISTORY_PATH, element: <RoomRentalHistory /> }]
       }
     ]
   },

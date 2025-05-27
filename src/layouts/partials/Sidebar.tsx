@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, EditOutlined, FileAddOutlined, HomeOutlined, SolutionOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, EditOutlined, ExceptionOutlined, FileAddOutlined, HomeOutlined, SolutionOutlined } from '@ant-design/icons'
 import { Drawer, Menu, MenuProps } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useState } from 'react'
@@ -47,6 +47,7 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
   const { user } = useAuth()
   const roles = user?.roles || []
   const isAdmin = ['ADMIN', 'SUPERADMIN'].some((role) => roles.includes(role))
+  const isSuperAdmin = [ 'SUPERADMIN'].some((role) => roles.includes(role))
   const isEmployee = roles.includes('EMPLOYEE')
   if (isEmployee || isAdmin) {
     items.push(
@@ -145,40 +146,46 @@ export default function Sidebar({ collapsed, isMd, isOpenSidebar, setIsOpenSideb
       }
     )
   }
-
-  return !isMd ? (
-    <div className='h-dvh bg-white overflow-auto '>
-      <Sider trigger={null} collapsible collapsed={collapsed} className='fixed top-0 left-0  max-md:hidden'>
-        <div className='p-4 pb-2 flex justify-between items-center bg-white'>
-          <img
-            src='http://res.cloudinary.com/dkeclpsjq/image/upload/v1748093528/DAPMNM/gufw0luvn3ynsqasdhbz.jpg'
-            className={`${!collapsed ? 'w-32' : 'w-0'}`}
+  if (isSuperAdmin) {
+    items.push({
+      key: ApplicationConstants.ROOM_HISTORY_PATH,
+      label: ApplicationConstants.ROOM_HISTORY_NAME,
+      icon: <ExceptionOutlined />
+    })
+  }
+    return !isMd ? (
+      <div className='h-dvh bg-white overflow-auto '>
+        <Sider trigger={null} collapsible collapsed={collapsed} className='fixed top-0 left-0  max-md:hidden'>
+          <div className='p-4 pb-2 flex justify-between items-center bg-white'>
+            <img
+              src='http://res.cloudinary.com/dkeclpsjq/image/upload/v1748093528/DAPMNM/gufw0luvn3ynsqasdhbz.jpg'
+              className={`${!collapsed ? 'w-32' : 'w-0'}`}
+            />
+            <img
+              src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1748093499/DAPMNM/prp9btxxcbczirsvetgx.jpg'
+              className={`${!collapsed ? 'w-0' : 'w-14'}`}
+            />
+          </div>
+          <Menu
+            className=''
+            theme='light'
+            mode='inline'
+            selectedKeys={[location.pathname]}
+            items={items}
+            onClick={onClick}
           />
-          <img
-            src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1748093499/DAPMNM/prp9btxxcbczirsvetgx.jpg'
-            className={`${!collapsed ? 'w-0' : 'w-14'}`}
-          />
-        </div>
+        </Sider>
+      </div>
+    ) : (
+      <Drawer title='Basic Drawer' placement='left' closable={false} onClose={onClose} open={isOpenSidebar}>
         <Menu
-          className=''
           theme='light'
           mode='inline'
+          defaultSelectedKeys={[selectedKey]}
           selectedKeys={[location.pathname]}
           items={items}
           onClick={onClick}
         />
-      </Sider>
-    </div>
-  ) : (
-    <Drawer title='Basic Drawer' placement='left' closable={false} onClose={onClose} open={isOpenSidebar}>
-      <Menu
-        theme='light'
-        mode='inline'
-        defaultSelectedKeys={[selectedKey]}
-        selectedKeys={[location.pathname]}
-        items={items}
-        onClick={onClick}
-      />
-    </Drawer>
-  )
+      </Drawer>
+    )
 }

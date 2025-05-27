@@ -66,6 +66,9 @@ class APIPathConstants {
   static readonly GET_MONEY_BY_WEEKS = 'statitic-dashboard/get-money-by-week'
   static readonly GET_MONEY_BY_MONTHS = 'statitic-dashboard/get-money-by-month'
   static readonly GET_ROOMS_USING = 'statitic-dashboard/get-data-room-using'
+
+  // Lịch sử thuê phòng
+  static readonly GET_ROOMS_RENTAL_HISTORY = 'history-using-room/get-history-by-room-id'
 } 
 
 export default APIPathConstants

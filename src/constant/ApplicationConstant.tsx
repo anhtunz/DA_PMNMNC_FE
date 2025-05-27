@@ -15,6 +15,9 @@ class ApplicationConstants {
   static readonly PERSONAL_WORKSHIFT_HISTORY_PATH = '/personal-workshift-history'
   static readonly SHIFT_REGISTRATION_PATH = '/shift-registration'
   static readonly CREATE_INVOICE_PATH = '/create-invoice'
+  static readonly ROOM_HISTORY_PATH = '/room-history'
+  static readonly ROOM_HISTORY_NAME = 'Lịch sử phòng'
+
 
   //Web Path - Auth
   static readonly FORGOT_PASSWORD_PATH = '/forgot-password'
