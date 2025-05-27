@@ -208,9 +208,9 @@ const AddServiceOrRoom: React.FC<AddServiceOrRoomProps> = ({ isAddService, isOpe
                       <Image
                         className='rounded-t-lg md:rounded-none md:rounded-s-lg'
                         src={
-                          room.type == '0'
-                            ? 'https://decoxdesign.com/upload/images/hotel-caitilin-1952m2-phong-ngu-01-decox-design.jpg'
-                            : 'https://kientruchoanmy.vn/wp-content/uploads/2022/06/thiet-ke-khach-san-mini-1.jpg'
+                          room.type != null
+                            ? room.roomImage
+                            : 'https://decoxdesign.com/upload/images/hotel-caitilin-1952m2-phong-ngu-01-decox-design.jpg'
                         }
                         alt=''
                         width='100%'
