@@ -289,15 +289,15 @@ const UsersManager = () => {
   }
 
   const getMenuItems = (record: any) => [
-    isSuperAdmin
+    isSuperAdmin && !record.isBlock
       ? {
-        label: (
-          <span onClick={() => handleActionTable({ record, key: '0' })}>
-            {record.isAdmin ? 'Hạ quyền' : 'Nâng quyền'}
-          </span>
-        ),
-        key: '0'
-      }
+          label: (
+            <span onClick={() => handleActionTable({ record, key: '0' })}>
+              {record.isAdmin ? 'Hạ quyền' : 'Nâng quyền'}
+            </span>
+          ),
+          key: '0'
+        }
       : null,
     {
       label: (
@@ -438,6 +438,7 @@ const UsersManager = () => {
             closeButton: true,
             isLoading: false
           })
+          setAvatar(null)
           fetchUser()
           return response
         } catch (error) {
@@ -451,6 +452,15 @@ const UsersManager = () => {
           console.error('Error uploading avatar:', error)
           return null
         }
+      } else {
+        toastService.update(id, {
+          render: 'Thêm người dùng thành công',
+          type: 'success',
+          autoClose: 2000,
+          closeButton: true,
+          isLoading: false
+        })
+        fetchUser()
       }
     } catch (err: any) {
       toastService.update(id, {
