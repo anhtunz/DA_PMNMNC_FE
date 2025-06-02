@@ -33,7 +33,7 @@ const BarChart: React.FC<BarChartProps> = ({
       return weekday.charAt(0).toUpperCase() + weekday.slice(1) // Viết hoa chữ đầu
     })
   }
-    
+
   useEffect(() => {
     if (values.length === 0) {
       setAnimatedValues([])
@@ -95,7 +95,7 @@ const BarChart: React.FC<BarChartProps> = ({
     if (type === 1) {
       return 'Thứ'
     } else if (type === 2) {
-      return 'Tháng'
+      return 'Ngày'
     } else {
       return ''
     }

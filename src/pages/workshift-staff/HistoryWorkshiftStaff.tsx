@@ -14,11 +14,11 @@ import { useTitle } from '../../hooks/useTitle'
 interface ShiftDetail {
   dayRegis: string
   data: {
-    id: string;
-    name: string;
-    timeStart: string;
-    timeEnd: string;
-  }[];
+    id: string
+    name: string
+    timeStart: string
+    timeEnd: string
+  }[]
 }
 
 interface Shift {
@@ -29,13 +29,12 @@ interface Shift {
 }
 
 const HistoryWorkshiftStaffPage = () => {
-
   const [users, setUsers] = useState<{ id: string; name: string }[]>([])
   const [userWorkshiftHistory, setUserWorkshiftHistory] = useState<Shift[]>([])
 
   const getUsersFromApi = async () => {
     try {
-      const resposne = await getAllUser();
+      const resposne = await getAllUser()
 
       setUsers(resposne.data)
     } catch (error) {
@@ -46,28 +45,25 @@ const HistoryWorkshiftStaffPage = () => {
     getUsersFromApi()
   }, [])
 
-  const optionUsers = users.map(item => ({
+  const optionUsers = users.map((item) => ({
     value: item.id,
     label: item.name
   }))
-
 
   const { selected: selectedUsers, handleSelect: handleSelecteMulti } = useSelectOption(true)
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const { rangeDate, handleDateChange } = useCappedDateRange()
 
-
-
-  /** Xử lí dữ liệu date 
+  /** Xử lí dữ liệu date
    * @param {nowFormatYMD} - ngày hiện tại theo định dạng YYYY/MM/DD
    * @param {nowFormatDMY} - ngày hiện tại theo định dạng DD/MM/YYYY
    * @param {rangeDate} - khoảng thời gian được chọn
    * @param {onChange} - hàm xử lí khi chọn khoảng thời gian
    * @description
-    * `onChange` sẽ nhận vào 2 tham số là `firstDay` và `lastDay`, nếu không có giá trị thì sẽ gán bằng ngày hiện tại.
-    * Nếu `firstDay` hoặc `lastDay` lớn hơn ngày hiện tại thì sẽ gán lại bằng ngày hiện tại.
-  */
+   * `onChange` sẽ nhận vào 2 tham số là `firstDay` và `lastDay`, nếu không có giá trị thì sẽ gán bằng ngày hiện tại.
+   * Nếu `firstDay` hoặc `lastDay` lớn hơn ngày hiện tại thì sẽ gán lại bằng ngày hiện tại.
+   */
   const now = new Date()
   const nowFormatYMD = formatDateByYMD(now)
   const nowFormatDMY = formatDateByDMY(now)
@@ -77,8 +73,8 @@ const HistoryWorkshiftStaffPage = () => {
   const handleCallApi = async () => {
     try {
       setLoading(true)
-      const startDate = rangeDate.startDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
-      const endDate = rangeDate.endDate?.format('YYYY-MM-DD HH:mm:ss') ?? null;
+      const startDate = rangeDate.startDate?.format('YYYY-MM-DD HH:mm:ss') ?? null
+      const endDate = rangeDate.endDate?.format('YYYY-MM-DD HH:mm:ss') ?? null
       const body = {
         startDate,
         endDate,
@@ -103,11 +99,7 @@ const HistoryWorkshiftStaffPage = () => {
   const renderShiftCollapseItems = (shifts_by_day: ShiftDetail[]) =>
     shifts_by_day.map((detail, idx) => ({
       key: String(idx),
-      label: (
-        <span className='font-bold italic'>
-          Ngày {dayjs(detail.dayRegis).format('DD-MM-YYYY')}
-        </span>
-      ),
+      label: <span className='font-bold italic'>Ngày {dayjs(detail.dayRegis).format('DD-MM-YYYY')}</span>,
       children: (
         <div className='grid grid-cols-3 gap-4 w-full'>
           {detail.data.map((item, i) => (
@@ -119,8 +111,8 @@ const HistoryWorkshiftStaffPage = () => {
             </div>
           ))}
         </div>
-      ),
-    }));
+      )
+    }))
 
   return (
     <div className='flex flex-col shadow-gray-50 bg-white p-6 rounded-2xl'>
@@ -132,7 +124,8 @@ const HistoryWorkshiftStaffPage = () => {
             isMultiSelect={true}
             placeholder='Chọn nhân viên'
             customWidth='100%'
-            onChange={handleSelecteMulti} />
+            onChange={handleSelecteMulti}
+          />
           <div className='flex flex-col gap-2 w-full'>
             <span className='font-bold'>Chọn thời gian</span>
             <RangeCalendarComponent
@@ -144,51 +137,58 @@ const HistoryWorkshiftStaffPage = () => {
           </div>
         </Filter>
       </div>
-      <div className='flex flex-col gap-4'>
-        <span className='font-semibold'>Danh sách lịch sử làm việc của nhân viên </span>
+      <div className='flex h-4/5 flex-col gap-4'>
+        <span className='font-semibold text-2xl'>Danh sách lịch sử làm việc của nhân viên </span>
         <Tabs
-          defaultActiveKey="0"
+          defaultActiveKey='0'
           tabPosition={'left'}
-          style={{ height: 400, padding: '32px 16px' }}
-          className="shadow-lg rounded-md bg-gray-50"
+          style={{ height: '100%', padding: '32px 16px' }}
+          className='shadow-lg rounded-md bg-gray-50'
           items={
             loading
               ? [
-                {
-                  label: (
-                    <div className='flex flex-row items-center gap-4'>
-                      <Skeleton.Avatar active size="large" />
-                      <span className='font-bold'><Skeleton.Input style={{ width: 100 }} active size="small" /></span>
-                    </div>
-                  ),
-                  key: "loading",
-                  children: <Skeleton active />
-                }
-              ]
-              : userWorkshiftHistory.map((shift, index) => (
-                {
+                  {
+                    label: (
+                      <div className='flex flex-row items-center gap-4'>
+                        <Skeleton.Avatar active size='large' />
+                        <span className='font-bold'>
+                          <Skeleton.Input style={{ width: 100 }} active size='small' />
+                        </span>
+                      </div>
+                    ),
+                    key: 'loading',
+                    children: <Skeleton active />
+                  }
+                ]
+              : userWorkshiftHistory.map((shift, index) => ({
                   label: (
                     <div className='flex flex-row items-center gap-4 '>
-                      <img className='rounded-full size-8 object-cover' src={shift.avatar} alt="Ảnh đại diện" />
+                      <img
+                        className='rounded-full size-8 object-cover'
+                        src={
+                          shift.avatar != null
+                            ? shift.avatar
+                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&s'
+                        }
+                        alt='Ảnh đại diện'
+                      />
                       <span className='font-bold'>{shift.user_name}</span>
                     </div>
                   ),
                   key: String(index),
-                  children: (
+                  children:
                     shift.shifts_by_day.length > 0 ? (
-                      <div className='max-h-[336px] overflow-auto'>
+                      <div className='h-full overflow-auto'>
                         <Collapse
                           items={renderShiftCollapseItems(shift.shifts_by_day)}
                           accordion
-                          className="bg-gray-300"
+                          className='bg-gray-300'
                         />
                       </div>
                     ) : (
                       <div>Không tìm thấy lịch sử</div>
                     )
-                  )
-                }
-              ))
+                }))
           }
         />
       </div>

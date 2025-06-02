@@ -106,7 +106,7 @@ const ForgetPassword = () => {
     if ('Email' in changedValues) {
       form
         .validateFields(['Email'])
-        .then(() => { })
+        .then(() => {})
         .catch(() => {
           setIsShowOTP(false)
         })
@@ -204,8 +204,8 @@ const ForgetPassword = () => {
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
           <div>
             <img
-              src='https://res.cloudinary.com/dkeclpsjq/image/upload/v1746891268/DAPMNM/logoipsum-369_hkvytu.svg'
-              className='w-32 mx-auto'
+              src='http://res.cloudinary.com/dkeclpsjq/image/upload/v1748093528/DAPMNM/gufw0luvn3ynsqasdhbz.jpg'
+              className='w-50 mx-auto'
             />
           </div>
           <div className='mt-12 flex flex-col items-center'>

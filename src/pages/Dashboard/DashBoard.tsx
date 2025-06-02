@@ -367,9 +367,9 @@ const DashBoardPage = () => {
           <h3 className='text-lg font-semibold text-gray-800 mb-4'>Tình trạng phòng hiện tại</h3>
           <DoughnutChart
             data={[
-              { label: 'Đang trống', value: roomUsingData?.totalRoomUsing ?? 0, color: '#51f542' },
+              { label: 'Đang được sử dụng', value: roomUsingData?.totalRoomUsing ?? 0, color: '#51f542' },
               {
-                label: 'Đang được sử dụng',
+                label: 'Đang trống',
                 value: roomUsingData?.totalRoom! - roomUsingData?.totalRoomUsing!,
                 color: '#c3d0d6'
               }
@@ -390,8 +390,8 @@ const DashBoardPage = () => {
             <Image
               className='rounded-t-lg md:rounded-none md:rounded-s-lg'
               src={
-                room.type == '0'
-                  ? 'https://decoxdesign.com/upload/images/hotel-caitilin-1952m2-phong-ngu-01-decox-design.jpg'
+                room.roomImage != null
+                  ? room.roomImage
                   : 'https://kientruchoanmy.vn/wp-content/uploads/2022/06/thiet-ke-khach-san-mini-1.jpg'
               }
               alt=''
